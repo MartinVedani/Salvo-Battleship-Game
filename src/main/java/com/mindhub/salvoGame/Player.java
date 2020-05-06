@@ -7,10 +7,10 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
-@Entity
+@Entity // Tells Spring to create a table named Player in the database
 public class Player {
 
-    @Id
+    @Id //Tells Spring to create an Id for each instance (row) in the table con @Gen... parameters
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
