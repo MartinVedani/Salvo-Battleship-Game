@@ -1,4 +1,4 @@
-package com.mindhub.salvoGame;
+package com.mindhub.salvo_game;
 
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
