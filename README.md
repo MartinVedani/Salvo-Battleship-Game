@@ -1,5 +1,5 @@
 # Salvo-Battleship-Game
-MindHub Latam 4. Introduction to Java back-end
+MindHub Latam 5. Java Full Stack (front and back-end)
 
 In this module, our team of developers has been contacted by a board game company looking to use their brand recognition to market online games with a retro touch. In particular, they want our team to create a multi-player online version of a Salvo-like game engine. Salvo was a pencil and paper game that was the basis for the popular Battleship game. The basic idea involves guessing where other players have hidden objects. This can be varied to create many different kinds of games with different user interfaces.
 
