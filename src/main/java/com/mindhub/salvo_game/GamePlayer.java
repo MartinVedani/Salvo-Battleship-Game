@@ -4,8 +4,11 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Entity
 public class GamePlayer {
@@ -15,17 +18,20 @@ public class GamePlayer {
     private long id;
     private LocalDateTime joinDate;
 
-    // relacion Many to One con Player. Un GamePlayer tiene un solo Player
-    // mientras que un Player puede tener muchos gamePlayers.
+    // relacion Many to One con Player. Cada fila de GamePlayer tiene un solo Player
+    // mientras que un Player puede tener muchas filas en gamePlayers.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "player_id")
     private Player player;
 
-    // relacion Many to One con Game. Un GamePlayer tiene un solo Game
-    // mientras que un Game puede tener muchos gamePlayers.
+    // relacion Many to One con Game. Cada fila de GamePlayer tiene un solo Game
+    // mientras que un Game puede tener muchas filas en gamePlayers.
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "game_id")
     private Game game;
+
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Ship> ships = new HashSet<>();
 
     public GamePlayer(){}
 
@@ -35,15 +41,28 @@ public class GamePlayer {
         this.game = game;
     }
 
+    public GamePlayer(Game game, Player player, LocalDateTime joinDate, Set<Ship> ships) {
+        this.joinDate = joinDate;
+        this.player = player;
+        this.game = game;
+        this.ships = ships;
+    }
+
     public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
     }
 
     public LocalDateTime getJoinDate() {
         return joinDate;
     }
 
-    // no setter para joinDate por que se especifica solo no hay que modificarlo.
+    public void setJoinDate(LocalDateTime joinDate) {
+        this.joinDate = joinDate;
+    }
 
     public Player getPlayer() {
         return player;
@@ -61,15 +80,35 @@ public class GamePlayer {
         this.game = game;
     }
 
+    public Set<Ship> getShips() {
+        return ships;
+    }
+
+    public void setShips(Set<Ship> ships) {
+        this.ships = ships;
+    }
+
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", this.getId());
-        dto.put("joinDate", this.getJoinDate());
+        dto.put("id", this.id);
+        dto.put("joinDate", this.joinDate);
         dto.put("player", this.getPlayer().playerDTO());
         return dto;
-        // getJoinDate() y getPlayer() fueron creado para ser prolijos, usalos en vez de ir directo a
-        // las variables
+        // getId() y getJoinDate() fueron creados para ser usados desde otras clases - como si
+        // se estuviera "pidiendo permiso".
+        // Estando dentro de la misma clase, puedes acceder directamente a this.is y this.joinDate
+        // y ahorrar tiempo y recursos en vez de usar getId() y getJoinDate() ya que la clase no necesita
+        // pedirse permiso a sí misma para ingresar sus propias propiedades.
+    }
+
+    public Map<String, Object> gamePlayerViewDTO(){
+        Map<String, Object> dto = new LinkedHashMap<>();
+        dto.put("gameId", this.game.getId());
+        dto.put("gamePlayers",
+                this.game.getGamePlayers().stream().map(GamePlayer::gamePlayerDTO).collect(Collectors.toList()));
+        dto.put("ships", this.ships.stream().map(Ship::shipsDTO).collect(Collectors.toList()));
+        return dto;
     }
 }
 

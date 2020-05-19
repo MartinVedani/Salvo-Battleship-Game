@@ -73,11 +73,11 @@ public class Player {
         return firstName + " " + lastName + " " + userName;
     }
 
-    //DTO (data transfer object) para administrar la info de Game
+    //DTO (data transfer object) para administrar la info de Player
     public Map<String, Object> playerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
-        dto.put("id", this.getId());
-        dto.put("userName", this.getUserName());
+        dto.put("id", this.id);
+        dto.put("userName", this.userName);
         return dto;
     }
 

@@ -53,9 +53,10 @@ public class Game {
     //DTO (data transfer object) para administrar la info de Game
     public Map<String, Object> gameDTO(){
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
-        dto.put("id", this.getId());
-        dto.put("created", this.getCreationDate());
-        dto.put("gamePlayers", this.getGamePlayers().stream().map(GamePlayer::gamePlayerDTO).collect(Collectors.toList()));
+        dto.put("id", this.id);
+        dto.put("created", this.creationDate);
+        dto.put("gamePlayers",
+                this.gamePlayers.stream().map(GamePlayer::gamePlayerDTO).collect(Collectors.toList()));
         return dto;
     }
 }
