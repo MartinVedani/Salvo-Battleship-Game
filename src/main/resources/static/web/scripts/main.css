@@ -1,0 +1,29 @@
+table,
+th,
+td {
+    border: 1px solid black;
+    text-align: center;
+    padding: 8px;
+}
+
+.naval_grid {
+    background-color: lightblue;
+}
+
+th {
+    background-color: blue;
+    color: white;
+}
+
+#salvos_grid td:hover {
+    background-color: orangered;
+}
+
+.letter {
+    background-color: blue;
+    color: white;
+}
+
+.td_ship {
+    background-color: lightgray;
+}

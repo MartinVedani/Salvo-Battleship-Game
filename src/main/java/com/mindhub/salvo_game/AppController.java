@@ -38,10 +38,11 @@ public class AppController {
         return gameRepository.findAll().stream().map(Game::gameDTO).collect(Collectors.toList());
     }
 
-    // Task 4.3.2
+    // Task 4.3.2, no usamos List<Map.. sino Map<.. porque ya no estamos trayendo una lista de elementos
+    // via stream sino que estamos trayendo un elemento  especifico via get().gamePlayerViewDTO().
     @RequestMapping("/game_view/{gamePlayerId}")
-    public List<Map<String, Object>> getGame(@PathVariable long gamePlayerId) {
-        return gamePlayerRepository.findById(gamePlayerId).stream().map(GamePlayer::gamePlayerViewDTO).collect(Collectors.toList());
+    public Map<String, Object> getGame(@PathVariable long gamePlayerId) {
+        return gamePlayerRepository.findById(gamePlayerId).get().gamePlayerViewDTO();
     }
 
 }

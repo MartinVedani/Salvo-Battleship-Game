@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>Ship Locations</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <!-- My STYLES -->
+    <link rel="stylesheet" href="scripts/main.css">
+</head>
+
+<body>
+    <div class="container-fluid" id="app">
+
+        <h3> Game # {{games != null ? games.gameId : '' }} </h3>
+
+        <div class="row justify-content-center align-self-center">
+
+            <div class="col">
+                <div class="table-responsive">
+                    <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2"> Game Id </th>
+                                <th rowspan="2"> Player (you) </th>
+                                <th rowspan="2"> Your Opponent </th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-data-body">
+                            <tr v-if="games != null">
+                                <td>{{ games.gameId }}</td>
+                                <td>{{ owner }}</td>
+                                <td>{{ opponent != null ? opponent : '' }}</td>
+
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center align-self-center">
+            <div class="col-6">
+                <h3> Your Ships </h3>
+                <div class="table-responsive text-center">
+                    <table class="table-hover table-sm align-middle naval_grid" id="ships_grid">
+                        <thead>
+                            <tr>
+                                <th v-for="number in numbers"> {{ number }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="letter in letters">
+                                <td class="letter"> {{ letter }} </td>
+                                <td v-for="n in 10" v-bind:id="letter + n"> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-6">
+                <h3> Your Shots </h3>
+                <div class="table-responsive text-center">
+                    <table class="table-hover table-sm align-middle naval_grid" id="salvos_grid">
+                        <thead>
+                            <tr>
+                                <th v-for="number in numbers"> {{ number }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="letter in letters">
+                                <td class="letter"> {{ letter }} </td>
+                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'"> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <pre id="output"></pre>
+
+    </div>
+
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- moments.js -->
+    <script src="scripts/moment-with-locales.min.js"></script>
+
+    <!-- My Scripts -->
+    <script src="scripts/game_view.js"></script>
+</body>
+
+</html>
