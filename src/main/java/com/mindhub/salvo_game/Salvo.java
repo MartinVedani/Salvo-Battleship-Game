@@ -9,27 +9,27 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-public class Ship {
+public class Salvo {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
-    private Type type;
+    private int turn;
 
     @ElementCollection
-    @Column(name="shipLocation")
-    private List<String> shipLocations = new ArrayList<>();
+    @Column(name="salvoLocations")
+    private List<String> salvoLocations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gamePlayer_id")
     private GamePlayer gamePlayer;
 
-    public Ship(){}
+    public Salvo(){}
 
-    public Ship(Type type, List<String> shipLocations, GamePlayer gamePlayer) {
-        this.type = type;
-        this.shipLocations = shipLocations;
+    public Salvo(int turn, List<String> salvoLocations, GamePlayer gamePlayer) {
+        this.turn = turn;
+        this.salvoLocations = salvoLocations;
         this.gamePlayer = gamePlayer;
     }
 
@@ -41,20 +41,20 @@ public class Ship {
         this.id = id;
     }
 
-    public Type getType() {
-        return type;
+    public int getTurn() {
+        return turn;
     }
 
-    public void setType(Type type) {
-        this.type = type;
+    public void setTurn(int turn) {
+        this.turn = turn;
     }
 
-    public List<String> getShipLocations() {
-        return shipLocations;
+    public List<String> getSalvoLocations() {
+        return salvoLocations;
     }
 
-    public void setShipLocations(List<String> shipLocations) {
-        this.shipLocations = shipLocations;
+    public void setSalvoLocations(List<String> salvoLocations) {
+        this.salvoLocations = salvoLocations;
     }
 
     public GamePlayer getGamePlayer() {
@@ -65,12 +65,11 @@ public class Ship {
         this.gamePlayer = gamePlayer;
     }
 
-    //DTO (data transfer object) para administrar la info de Game
-    public Map<String, Object> shipsDTO(){
+    public Map<String, Object> salvoDTO(){
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
-        dto.put("type", this.type);
-        dto.put("shipLocation", this.shipLocations);
+        dto.put("turn", this.turn);
+        dto.put("salvoLocation", this.salvoLocations);
+        dto.put("userName", this.gamePlayer.getPlayer().getUserName());
         return dto;
     }
-
 }

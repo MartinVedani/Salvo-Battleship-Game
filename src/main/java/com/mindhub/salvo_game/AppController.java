@@ -29,6 +29,9 @@ public class AppController {
     @Autowired
     private ShipRepository shipRepository;
 
+    @Autowired
+    private SalvoRepository salvoRepository;
+
     // Task 4.2.6
     @RequestMapping("/games")
     // en Java, Map es una lista (que representa un objeto con toda la información de una instancia de Game

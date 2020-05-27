@@ -14,6 +14,7 @@ var app = new Vue({
         games: null,
         owner: "",
         opponent: "",
+        ownerShips: [],
         numbers: ["", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
     },
@@ -32,8 +33,11 @@ var app = new Vue({
                 // set player vs opponent info
                 app.getPlayersInfo();
 
-                //print viewer's ships
+                //print owner's ships
                 app.printShips();
+
+                //print shots
+                app.printSalvos();
             })
     },
 
@@ -46,14 +50,6 @@ var app = new Vue({
     },
 
     methods: {
-        printShips() {
-            this.games.ships.forEach(ship => {
-                ship.location.forEach(loc => {
-                    document.getElementById(loc).style.backgroundColor = "grey";
-                })
-            })
-        },
-
         getPlayersInfo() {
             this.games.gamePlayers.forEach(gp => {
                 if (gp.id == gpUrl) {
@@ -63,11 +59,41 @@ var app = new Vue({
                 }
             })
         },
+
+        printShips() {
+            this.games.ships.forEach(ship => {
+                ship.shipLocation.forEach(shipLoc => {
+                    this.ownerShips.push(shipLoc);
+                    document.getElementById(shipLoc).style.backgroundColor = "grey";
+                })
+            })
+        },
+
+        printSalvos() {
+            //var salvoLoc;
+            this.games.salvos.forEach(salvo => {
+                salvo.salvoLocation.forEach(loc => {
+                    if (salvo.userName == this.owner) {
+                        //salvoLoc = loc + '.salvo';
+                        document.getElementById(loc + '.salvo').style.backgroundColor = "orange";
+                        document.getElementById(loc + '.salvo').innerText = salvo.turn;
+                    } else {
+                        if (this.ownerShips.includes(loc)) {
+                            document.getElementById(loc).style.backgroundColor = "red";
+                            document.getElementById(loc).innerText = 'H'; //Hit
+                        } else {
+                            document.getElementById(loc).style.backgroundColor = "lime";
+                            document.getElementById(loc).innerText = 'M'; //Miss
+                        }
+                    }
+                })
+            })
+        },
     },
 
 });
 
-// AJAX Feed for developing
+// AJAX Feed for help with developing
 
 $(function() {
 

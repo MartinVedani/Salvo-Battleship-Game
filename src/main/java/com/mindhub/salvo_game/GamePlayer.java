@@ -33,6 +33,9 @@ public class GamePlayer {
     @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Ship> ships = new HashSet<>();
 
+    @OneToMany(mappedBy = "gamePlayer", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Salvo> salvos = new HashSet<>();
+
     public GamePlayer(){}
 
     public GamePlayer(Game game, Player player, LocalDateTime joinDate) {
@@ -41,7 +44,7 @@ public class GamePlayer {
         this.game = game;
     }
 
-    public GamePlayer(Game game, Player player, LocalDateTime joinDate, Set<Ship> ships) {
+    public GamePlayer(Game game, Player player, LocalDateTime joinDate, Set<Ship> ships, Set<Salvo> salvos) {
         this.joinDate = joinDate;
         this.player = player;
         this.game = game;
@@ -88,6 +91,14 @@ public class GamePlayer {
         this.ships = ships;
     }
 
+    public Set<Salvo> getSalvos() {
+        return salvos;
+    }
+
+    public void setSalvos(Set<Salvo> salvos) {
+        this.salvos = salvos;
+    }
+
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -108,6 +119,7 @@ public class GamePlayer {
         dto.put("gamePlayers",
                 this.game.getGamePlayers().stream().map(GamePlayer::gamePlayerDTO).collect(Collectors.toList()));
         dto.put("ships", this.ships.stream().map(Ship::shipsDTO).collect(Collectors.toList()));
+        dto.put("salvos", game.getGamePlayers().stream().flatMap(gamePlayer -> gamePlayer.getSalvos().stream().map(Salvo::salvoDTO)).collect(Collectors.toList()));
         return dto;
     }
 }
