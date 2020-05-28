@@ -34,15 +34,18 @@ var app = new Vue({
     methods: {
 
         buildScoreBoard() {
-            var players_withScore = [];
-            this.games.forEach(game => {
-                game.gamePlayers.forEach(gamePlayer => {
-                    players_withScore.push(gamePlayer.player.userName);
+            /* var players_withScore = [];
+            this.games.forEach(g => {
+                g.gamePlayers.forEach(gp => {
+                    players_withScore.push(gp.player.userName);
                 })
-            })
+            }) */
 
-            // get unique userName for all players with score
-            players_withScore = [].concat(...new Set(players_withScore));
+            // lo mismo pero más refinado con flatMap y map
+            var players_withScore = this.games.flatMap(g => g.gamePlayers.map(gp => gp.player.userName));
+
+            // use Srt to get an array of unique userNames for all players with score
+            players_withScore = Array.from(new Set(players_withScore));
 
             for (i = 0; i < players_withScore.length; i++) {
                 var player = {
@@ -52,17 +55,17 @@ var app = new Vue({
                     tied: 0,
                     total: 0,
                 };
-                this.games.forEach(game => {
-                    game.gamePlayers.forEach(gamePlayer => {
-                        if (gamePlayer.player.userName == player.userName & gamePlayer.gamePlayerScore == 1) {
+                this.games.forEach(g => {
+                    g.gamePlayers.forEach(gp => {
+                        if (gp.player.userName == player.userName & gp.gamePlayerScore == 1) {
                             player.won++;
-                        } else if (gamePlayer.player.userName == player.userName & gamePlayer.gamePlayerScore == 0) {
+                        } else if (gp.player.userName == player.userName & gp.gamePlayerScore == 0) {
                             player.lost++;
-                        } else if (gamePlayer.player.userName == player.userName & gamePlayer.gamePlayerScore == 0.5) {
+                        } else if (gp.player.userName == player.userName & gp.gamePlayerScore == 0.5) {
                             player.tied++;
                         };
-                        if (gamePlayer.player.userName == player.userName & gamePlayer.gamePlayerScore != "null") {
-                            player.total = player.total + gamePlayer.gamePlayerScore;
+                        if (gp.player.userName == player.userName & gp.gamePlayerScore != "null") {
+                            player.total = player.total + gp.gamePlayerScore;
                         };
                     })
                 })
