@@ -25,6 +25,9 @@ public class Player {
     private Set<GamePlayer> gamePlayer = new HashSet<>();
     //declaro el Set<GamePlayer> para la relación 1:N intermedia
 
+    @OneToMany(mappedBy = "player", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Score> scores = new HashSet<>();
+
     public Player(){} //Primero que nada Spring necesita una instancia vacía para poder trabajar con la base de datos
 
     public Player(String firstName, String lastName, String userName){
@@ -42,8 +45,12 @@ public class Player {
     }
 
     public long getId() {
-        return this.id;
-    } //no hay setter, porque lo genera spring con @Id automáticamente
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public String getFirstName() {
         return firstName;
@@ -69,6 +76,30 @@ public class Player {
         this.userName = userName;
     }
 
+    public int getXp() {
+        return xp;
+    }
+
+    public void setXp(int xp) {
+        this.xp = xp;
+    }
+
+    public Set<GamePlayer> getGamePlayer() {
+        return gamePlayer;
+    }
+
+    public void setGamePlayer(Set<GamePlayer> gamePlayer) {
+        this.gamePlayer = gamePlayer;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
+    }
+
     public String toString() {
         return firstName + " " + lastName + " " + userName;
     }
@@ -80,5 +111,4 @@ public class Player {
         dto.put("userName", this.userName);
         return dto;
     }
-
 }

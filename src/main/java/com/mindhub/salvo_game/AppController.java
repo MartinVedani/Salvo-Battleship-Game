@@ -19,20 +19,9 @@ public class AppController {
     @Autowired
     private GamePlayerRepository gamePlayerRepository;
 
-    // @Autowired
-    // private PlayerRepository playerRepository;
+    //@Autowire se usa solamente para traer al controller, los repositorios que estoy
+    //pidiendo en el mapping (solamente los que necesito utilizar).
 
-    // You do not need to @Autowire a PlayerRepository or GamePlayer repository into your controller
-    // for task 4.2.6. When you load a Game, Spring code automatically loads whatever a game contains,
-    // including its collection of game players.
-
-    @Autowired
-    private ShipRepository shipRepository;
-
-    @Autowired
-    private SalvoRepository salvoRepository;
-
-    // Task 4.2.6
     @RequestMapping("/games")
     // en Java, Map es una lista (que representa un objeto con toda la información de una instancia de Game
     // en este caso) de elementos con clave (tipo String) y valor (tipo Object en este caso, o lo que sea

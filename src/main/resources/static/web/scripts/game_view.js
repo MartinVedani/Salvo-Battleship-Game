@@ -64,7 +64,7 @@ var app = new Vue({
             this.games.ships.forEach(ship => {
                 ship.shipLocation.forEach(shipLoc => {
                     this.ownerShips.push(shipLoc);
-                    document.getElementById(shipLoc).style.backgroundColor = "grey";
+                    document.getElementById(shipLoc).classList.add('td_ship');
                 })
             })
         },
@@ -75,14 +75,14 @@ var app = new Vue({
                 salvo.salvoLocation.forEach(loc => {
                     if (salvo.userName == this.owner) {
                         //salvoLoc = loc + '.salvo';
-                        document.getElementById(loc + '.salvo').style.backgroundColor = "orange";
+                        document.getElementById(loc + '.salvo').classList.add('td_salvo_shot');
                         document.getElementById(loc + '.salvo').innerText = salvo.turn;
                     } else {
                         if (this.ownerShips.includes(loc)) {
-                            document.getElementById(loc).style.backgroundColor = "red";
+                            document.getElementById(loc).classList.add('td_ship_hit');
                             document.getElementById(loc).innerText = 'H'; //Hit
                         } else {
-                            document.getElementById(loc).style.backgroundColor = "lime";
+                            document.getElementById(loc).classList.add('td_ship_miss');
                             document.getElementById(loc).innerText = 'M'; //Miss
                         }
                     }

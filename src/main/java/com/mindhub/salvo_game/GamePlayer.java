@@ -99,12 +99,22 @@ public class GamePlayer {
         this.salvos = salvos;
     }
 
+    public Score getGamePlayerScore() {
+        return this.getPlayer().getScores().stream().filter(score -> score.getGame().getId() == this.getGame().getId()).findFirst().orElse(null);
+    }
+
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("id", this.id);
         dto.put("joinDate", this.joinDate);
         dto.put("player", this.getPlayer().playerDTO());
+        Score gamePlayerScore = this.getGamePlayerScore();
+        if (gamePlayerScore != null){
+            dto.put("gamePlayerScore", gamePlayerScore.getScore());
+        } else {
+            dto.put("gamePlayerScore", "null");
+        }
         return dto;
         // getId() y getJoinDate() fueron creados para ser usados desde otras clases - como si
         // se estuviera "pidiendo permiso".

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <title>Salvo Games</title>
@@ -10,65 +11,95 @@
     <!-- My STYLES -->
     <link rel="stylesheet" href="scripts/main.css">
 </head>
+
 <body>
-        <div class="container-fluid" id="app">
-            <div class="row align-items-center">
-                <div class="col">
+    <div class="container-fluid" id="app">
+        <div class="row align-items-center">
+            <div class="col">
 
-                    <h1> Salvo Games </h1>
-
-                    <div class="table-responsive text-center">
-                        <table class="table-striped table-hover table-sm" id="gamesTable">
-                            <thead>
-                                <tr>
-                                    <th colspan="2">Game</th>
-                                    <th colspan="2">Player 1</th>
-                                    <th colspan="2">Player 2</th>
-                                </tr>
-                                <tr>
-                                    <th>Id</th>
-                                    <th>Created</th>
-                                    <th>User Id</th>
-                                    <th>Join Date</th>
-                                    <th>User Id</th>
-                                    <th>Join Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-data-body">
-                                <tr v-for="game in games">
-                                    <td>{{ game.id}}</td>
-                                    <td>{{ game.created | formatDate }}</td>
-                                    <td>{{ game.gamePlayers[0].player.userName }}</td>
-                                    <td>{{ game.gamePlayers[0].joinDate | formatDate }}</td>
-                                    <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].player.userName : '' }}</td>
-                                    <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].joinDate : '' | formatDate}}</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
+                <h2> Score Board </h2>
+                <div class="table-responsive text-center">
+                    <table class="table-striped table-hover table-sm" id="gamesTable">
+                        <thead>
+                            <tr>
+                                <th> Player </th>
+                                <th> Total Points </th>
+                                <th> Won </th>
+                                <th> Lost </th>
+                                <th> Tied</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="player in scoreBoard">
+                                <td> {{ player.userName }} </td>
+                                <td> {{ player.total }} </td>
+                                <td> {{ player.won }} </td>
+                                <td> {{ player.lost }} </td>
+                                <td> {{ player.tied }} </td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
             </div>
-
-            <pre id="output"></pre>
-
         </div>
 
-        <!-- jQuery library -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <div class="row align-items-center">
+            <div class="col">
+                <h2> Salvo Games </h2>
 
-        <!-- Popper JS -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+                <div class="table-responsive text-center">
+                    <table class="table-striped table-hover table-sm" id="gamesTable">
+                        <thead>
+                            <tr>
+                                <th colspan="2">Game</th>
+                                <th colspan="2">Player 1</th>
+                                <th colspan="2">Player 2</th>
+                            </tr>
+                            <tr>
+                                <th>Id</th>
+                                <th>Created</th>
+                                <th>User Id</th>
+                                <th>Join Date</th>
+                                <th>User Id</th>
+                                <th>Join Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-data-body">
+                            <tr v-for="game in games">
+                                <td>{{ game.id}}</td>
+                                <td>{{ game.created | formatDate }}</td>
+                                <td>{{ game.gamePlayers[0].player.userName }}</td>
+                                <td>{{ game.gamePlayers[0].joinDate | formatDate }}</td>
+                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].player.userName : '' }}</td>
+                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].joinDate : '' | formatDate}}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-        <!-- Latest compiled JavaScript -->
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+        <pre id="output"></pre>
 
-        <!-- Vue -->
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    </div>
 
-        <!-- moments.js -->
-        <script src="scripts/moment-with-locales.min.js"></script>
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-        <!-- My Scripts -->
-        <script src="scripts/games.js"></script>
+    <!-- Popper JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+
+    <!-- Vue -->
+    <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+
+    <!-- moments.js -->
+    <script src="scripts/moment-with-locales.min.js"></script>
+
+    <!-- My Scripts -->
+    <script src="scripts/games.js"></script>
 </body>
+
 </html>

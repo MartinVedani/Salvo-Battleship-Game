@@ -16,10 +16,12 @@ public class BattleshipApplication {
 	}
 
 	@Bean
-	public CommandLineRunner initData(PlayerRepository playerRepository, GameRepository gameRepository,
+	public CommandLineRunner initData(PlayerRepository playerRepository,
+									  GameRepository gameRepository,
 									  GamePlayerRepository gamePlayerRepository,
 									  ShipRepository shipRepository,
-									  SalvoRepository salvoRepository) {
+									  SalvoRepository salvoRepository,
+									  ScoreRepository scoreRepository) {
 		return (args) -> {
 			// make TEST players
 			Player jack = playerRepository.save(new Player("Jack", "Bauer", "j.bauer@ctu.gov"));
@@ -115,6 +117,20 @@ public class BattleshipApplication {
 			Salvo salvo19 = salvoRepository.save(new Salvo (2, Arrays.asList("G6","G7","G8"), gp9));
 			Salvo salvo20 = salvoRepository.save(new Salvo (2, Arrays.asList("C6","D6","E6"), gp10));
 			Salvo salvo21 = salvoRepository.save(new Salvo (3, Arrays.asList("H1","H8"), gp10));
+
+			// make TEST scores. Win = 1, Lose = 0, Tie = 0.5.
+
+			Score score1 = scoreRepository.save(new Score(game1,jack,1,LocalDateTime.now()));
+			Score score2 = scoreRepository.save(new Score(game1,chloe,0,LocalDateTime.now()));
+
+			Score score3 = scoreRepository.save(new Score(game2,jack,0.5,LocalDateTime.now()));
+			Score score4 = scoreRepository.save(new Score(game2,chloe,0.5,LocalDateTime.now()));
+
+			Score score5 = scoreRepository.save(new Score(game3,chloe,1,LocalDateTime.now()));
+			Score score6 = scoreRepository.save(new Score(game3,tony,0,LocalDateTime.now()));
+
+			Score score7 = scoreRepository.save(new Score(game4,chloe,0.5,LocalDateTime.now()));
+			Score score8 = scoreRepository.save(new Score(game4,jack,0.5,LocalDateTime.now()));
 		};
 	}
 }

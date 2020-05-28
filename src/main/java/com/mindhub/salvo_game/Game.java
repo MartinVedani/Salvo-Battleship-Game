@@ -24,6 +24,9 @@ public class Game {
     private Set<GamePlayer> gamePlayers = new HashSet<>();
     //declaro el Set<GamePlayer> para la relación 1:N intermedia
 
+    @OneToMany(mappedBy = "game", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Score> scores = new HashSet<>();
+
     //constructor vacío para inicializar la base de datos
     public Game(){}
 
@@ -36,7 +39,9 @@ public class Game {
         return id;
     }
 
-    // no necesito setId y lo borro para que no se pueda llamar.
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public LocalDateTime getCreationDate() {
         return creationDate;
@@ -48,6 +53,18 @@ public class Game {
 
     public Set<GamePlayer> getGamePlayers() {
         return gamePlayers;
+    }
+
+    public void setGamePlayers(Set<GamePlayer> gamePlayers) {
+        this.gamePlayers = gamePlayers;
+    }
+
+    public Set<Score> getScores() {
+        return scores;
+    }
+
+    public void setScores(Set<Score> scores) {
+        this.scores = scores;
     }
 
     //DTO (data transfer object) para administrar la info de Game

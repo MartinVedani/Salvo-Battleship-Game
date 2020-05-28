@@ -24,6 +24,21 @@ th {
     color: white;
 }
 
+.td_salvo_shot {
+    background-color: orange;
+    color: white;
+}
+
 .td_ship {
-    background-color: lightgray;
+    background-color: darkslategrey;
+    color: white;
+}
+
+.td_ship_hit {
+    background-color: red;
+    color: white;
+}
+
+.td_ship_miss {
+    background-color: lime;
 }
