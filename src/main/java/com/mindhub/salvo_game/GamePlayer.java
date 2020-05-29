@@ -16,6 +16,7 @@ public class GamePlayer {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
+
     private LocalDateTime joinDate;
 
     // relacion Many to One con Player. Cada fila de GamePlayer tiene un solo Player

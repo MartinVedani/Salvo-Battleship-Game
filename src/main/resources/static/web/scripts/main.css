@@ -1,3 +1,9 @@
+:root {
+    --main-color: #007bff;
+    --text-color: #f7f7f7;
+    --ship-color: darkslategrey;
+}
+
 table,
 th,
 td {
@@ -30,7 +36,7 @@ th {
 }
 
 .td_ship {
-    background-color: darkslategrey;
+    background-color: var(--ship-color);
     color: white;
 }
 

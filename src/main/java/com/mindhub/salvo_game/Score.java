@@ -12,6 +12,7 @@ public class Score {
     @GeneratedValue(strategy = GenerationType.AUTO, generator = "native")
     @GenericGenerator(name = "native", strategy = "native")
     private long id;
+
     private double score;
     private LocalDateTime finishDate;
 
