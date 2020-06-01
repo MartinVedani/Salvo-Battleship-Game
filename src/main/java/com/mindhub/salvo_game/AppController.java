@@ -31,6 +31,12 @@ public class AppController {
     @Autowired
     private GameRepository gameRepository;
 
+    @Autowired
+    private GamePlayerRepository gamePlayerRepository;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @RequestMapping("/games")
     public Map<String, Object> getGames(Authentication authentication){
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -47,8 +53,6 @@ public class AppController {
 // Game en este caso) de elementos con clave (tipo String) y valor (tipo Object en este caso, o lo
 // que sea en otros casos): List<Map<String, Object>>
 
-    @Autowired
-    private GamePlayerRepository gamePlayerRepository;
 
     @RequestMapping("/game_view/{gamePlayerId}")
     public Map<String, Object> getGameView(@PathVariable long gamePlayerId, Authentication authenticate) {
@@ -70,13 +74,6 @@ public class AppController {
 // quiero mostrar y de la forma que la quiero mostrar. Por ejemplo, me permite evitar que se muestren
 // passwords.
 
-    @Autowired
-    PasswordEncoder passwordEncoder;
-
-    private boolean isGuest(Authentication authentication){
-        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-    }
-
     @RequestMapping(path = "/players", method = RequestMethod.POST)
     public ResponseEntity<Map<String, Object>> createUser(
             @RequestParam String firstName, @RequestParam String lastName,
@@ -84,7 +81,7 @@ public class AppController {
         ResponseEntity<Map<String, Object>> response;
         Player player = playerRepository.findPlayerByUsername(username);
         if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            response = new ResponseEntity<>(makeMap("error", "Missing data"), HttpStatus.FORBIDDEN);
+            response = new ResponseEntity<>(makeMap("error", "Missing data"), HttpStatus.BAD_REQUEST);
         } else if (player != null) {
             response = new ResponseEntity<>(makeMap("error", "Username already exists"), HttpStatus.CONFLICT);
         } else {
@@ -92,6 +89,10 @@ public class AppController {
             response = new ResponseEntity<>(makeMap("id", newPlayer.getId()), HttpStatus.CREATED);
         }
         return response;
+    }
+
+    private boolean isGuest(Authentication authentication){
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 
     private Map<String, Object> makeMap(String key, Object value) {

@@ -30,8 +30,8 @@
 
                     <br>
 
-                    <a href="#demo" class="btn btn-info btn-warning" data-toggle="collapse">If you are a new player click here</a>
-                    <div id="demo" class="collapse">
+                    <a href="#newUser" class="btn btn-info btn-warning" data-toggle="collapse">If you are a new player click here</a>
+                    <div id="newUser" class="collapse">
                        
                         <form id="addPlayer">
                              <h2>New Player Sign Up</h2>
@@ -45,8 +45,9 @@
                 </template>
 
                 <form v-else id="logout">
-                    <h2>Player loged In</h2>
-                    <span>{{ player.username }}</span><br>
+                    <h4>Current player: </h4>
+                    <span>{{ player.username }} </span>
+                    <span><small><i>(if this is not you please log out)</i></small><br>
                     <button v-on:click="logout()" type="button">Log out</button>
                 </form>
 

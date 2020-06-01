@@ -19,7 +19,7 @@ public class BattleshipApplication extends SpringBootServletInitializer {
 	}
 
 	@Autowired
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository,
