@@ -5,6 +5,11 @@ var app = new Vue({
     data: {
         games: [],
         scoreBoard: [],
+        player: "Guest",
+        firstName: null,
+        lastName: null,
+        username: null,
+        password: null,
     },
 
     created() {
@@ -16,7 +21,8 @@ var app = new Vue({
             }).then(res => res.json())
             .catch(error => console.error('Error:', error))
             .then(json => {
-                this.games = json;
+                this.games = json.games;
+                this.player = json.player;
 
                 //build scoreBoard
                 app.buildScoreBoard();
@@ -37,19 +43,19 @@ var app = new Vue({
             /* var players_withScore = [];
             this.games.forEach(g => {
                 g.gamePlayers.forEach(gp => {
-                    players_withScore.push(gp.player.userName);
+                    players_withScore.push(gp.player.username);
                 })
             }) */
 
             // lo mismo pero más refinado con flatMap y map
-            var players_withScore = this.games.flatMap(g => g.gamePlayers.map(gp => gp.player.userName));
+            var players_withScore = this.games.flatMap(g => g.gamePlayers.map(gp => gp.player.username));
 
-            // use Srt to get an array of unique userNames for all players with score
+            // use Sort to get an array of unique usernames for all players with score
             players_withScore = Array.from(new Set(players_withScore));
 
             for (i = 0; i < players_withScore.length; i++) {
                 var player = {
-                    userName: players_withScore[i],
+                    username: players_withScore[i],
                     won: 0,
                     lost: 0,
                     tied: 0,
@@ -57,14 +63,14 @@ var app = new Vue({
                 };
                 this.games.forEach(g => {
                     g.gamePlayers.forEach(gp => {
-                        if (gp.player.userName == player.userName & gp.gamePlayerScore == 1) {
+                        if (gp.player.username == player.username & gp.gamePlayerScore == 1) {
                             player.won++;
-                        } else if (gp.player.userName == player.userName & gp.gamePlayerScore == 0) {
+                        } else if (gp.player.username == player.username & gp.gamePlayerScore == 0) {
                             player.lost++;
-                        } else if (gp.player.userName == player.userName & gp.gamePlayerScore == 0.5) {
+                        } else if (gp.player.username == player.username & gp.gamePlayerScore == 0.5) {
                             player.tied++;
                         };
-                        if (gp.player.userName == player.userName & gp.gamePlayerScore != "null") {
+                        if (gp.player.username == player.username & gp.gamePlayerScore != "null") {
                             player.total = player.total + gp.gamePlayerScore;
                         };
                     })
@@ -74,6 +80,43 @@ var app = new Vue({
             }
             this.scoreBoard.sort();
         },
+
+        // handler for when user clicks add person
+        addPlayer() {
+            var form = document.querySelector('#addPlayer');
+            $.post("/api/players", {
+                firstName: this.firstName,
+                lastName: this.lastName,
+                username: this.username,
+                password: this.password,
+            }).done(function() {
+                app.login(app.username, app.password)
+            }).fail(function() {
+                console.log("error")
+            })
+        },
+
+        login(username, password) {
+            var form = document.querySelector('#login');
+            $.post("/api/login", {
+                username: this.username,
+                password: this.password,
+            }).done(function() {
+                console.log("logged In!");
+                location.reload();
+            }).fail(function() {
+                console.log("error")
+            })
+        },
+
+        logout() {
+            $.post("/api/logout").done(function() {
+                console.log("logged out!");
+                location.reload();
+            }).fail(function() {
+                console.log("error")
+            })
+        }
     }
 });
 

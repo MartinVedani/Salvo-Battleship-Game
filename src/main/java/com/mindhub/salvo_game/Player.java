@@ -18,7 +18,8 @@ public class Player {
 
         private String firstName;
         private String lastName;
-        private String userName;
+        private String username;
+        private String password;
         private int xp;
 
     // relacion many to many con Games a través de la instancia intermedia GamePLayer
@@ -31,17 +32,19 @@ public class Player {
 
     public Player(){} //Primero que nada Spring necesita una instancia vacía para poder trabajar con la base de datos
 
-    public Player(String firstName, String lastName, String userName){
+    public Player(String firstName, String lastName, String username, String password){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
+        this.username = username;
+        this.password = password;
         this.xp = 0;
     }
 
-    public Player(String firstName, String lastName, String userName, int xp){
+    public Player(String firstName, String lastName, String username, String password, int xp){
         this.firstName = firstName;
         this.lastName = lastName;
-        this.userName = userName;
+        this.username = username;
+        this.password = password;
         this.xp = xp;
     }
 
@@ -69,12 +72,12 @@ public class Player {
         this.lastName = lastName;
     }
 
-    public String getUserName() {
-        return userName;
+    public String getUsername() {
+        return username;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setUsername(String username) {
+        this.username = username;
     }
 
     public int getXp() {
@@ -102,14 +105,22 @@ public class Player {
     }
 
     public String toString() {
-        return firstName + " " + lastName + " " + userName;
+        return firstName + " " + lastName + " " + username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     //DTO (data transfer object) para administrar la info de Player
     public Map<String, Object> playerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
         dto.put("id", this.id);
-        dto.put("userName", this.userName);
+        dto.put("username", this.username);
         return dto;
     }
 }

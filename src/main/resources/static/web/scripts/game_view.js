@@ -53,9 +53,9 @@ var app = new Vue({
         getPlayersInfo() {
             this.games.gamePlayers.forEach(gp => {
                 if (gp.id == gpUrl) {
-                    this.owner = gp.player.userName
+                    this.owner = gp.player.username
                 } else {
-                    this.opponent = gp.player.userName
+                    this.opponent = gp.player.username
                 }
             })
         },
@@ -73,7 +73,7 @@ var app = new Vue({
             //var salvoLoc;
             this.games.salvos.forEach(salvo => {
                 salvo.salvoLocation.forEach(loc => {
-                    if (salvo.userName == this.owner) {
+                    if (salvo.username == this.owner) {
                         //salvoLoc = loc + '.salvo';
                         document.getElementById(loc + '.salvo').classList.add('td_salvo_shot');
                         document.getElementById(loc + '.salvo').innerText = salvo.turn;

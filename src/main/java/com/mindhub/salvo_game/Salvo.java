@@ -70,7 +70,7 @@ public class Salvo {
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
         dto.put("turn", this.turn);
         dto.put("salvoLocation", this.salvoLocations);
-        dto.put("userName", this.gamePlayer.getPlayer().getUserName());
+        dto.put("username", this.gamePlayer.getPlayer().getUsername());
         return dto;
     }
 }

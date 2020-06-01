@@ -14,6 +14,45 @@
 
 <body>
     <div class="container-fluid" id="app">
+
+        <div class="row align-items-center">
+            <div class="col">
+
+                <template v-if=" player == 'Guest' ">
+                    <div>
+                        <form id="login">
+                            <h2>Existing Player login</h2>
+                            <label>Player's username [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
+                            <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
+                            <button v-on:click="login()" type="button">Existing player login</button>
+                        </form>
+                    </div>
+
+                    <br>
+
+                    <a href="#demo" class="btn btn-info btn-warning" data-toggle="collapse">If you are a new player click here</a>
+                    <div id="demo" class="collapse">
+                       
+                        <form id="addPlayer">
+                             <h2>New Player Sign Up</h2>
+                             <label>Player's First Name: <input v-model:value="firstName" type="text" size="30"></label><br>
+                             <label>Player's Last Name: <input v-model:value="lastName" type="text" size="30"></label><br>
+                             <label>Player's Email [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
+                             <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
+                             <button v-on:click="addPlayer()" type="button">Create New Player</button>
+                        </form>
+                    </div>
+                </template>
+
+                <form v-else id="logout">
+                    <h2>Player loged In</h2>
+                    <span>{{ player.username }}</span><br>
+                    <button v-on:click="logout()" type="button">Log out</button>
+                </form>
+
+            </div>
+        </div>
+        <hr>
         <div class="row align-items-center">
             <div class="col">
 
@@ -31,7 +70,7 @@
                         </thead>
                         <tbody>
                             <tr v-for="player in scoreBoard">
-                                <td> {{ player.userName }} </td>
+                                <td> {{ player.username }} </td>
                                 <td> {{ player.total }} </td>
                                 <td> {{ player.won }} </td>
                                 <td> {{ player.lost }} </td>
@@ -68,9 +107,9 @@
                             <tr v-for="game in games">
                                 <td>{{ game.id}}</td>
                                 <td>{{ game.created | formatDate }}</td>
-                                <td>{{ game.gamePlayers[0].player.userName }}</td>
+                                <td>{{ game.gamePlayers[0].player.username }}</td>
                                 <td>{{ game.gamePlayers[0].joinDate | formatDate }}</td>
-                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].player.userName : '' }}</td>
+                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].player.username : '' }}</td>
                                 <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].joinDate : '' | formatDate}}</td>
                             </tr>
                         </tbody>

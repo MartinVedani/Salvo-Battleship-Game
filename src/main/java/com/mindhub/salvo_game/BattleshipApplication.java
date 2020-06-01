@@ -1,19 +1,25 @@
 package com.mindhub.salvo_game;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @SpringBootApplication
-public class BattleshipApplication {
+public class BattleshipApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BattleshipApplication.class, args);
 	}
+
+	@Autowired
+	PasswordEncoder passwordEncoder;
 
 	@Bean
 	public CommandLineRunner initData(PlayerRepository playerRepository,
@@ -24,10 +30,10 @@ public class BattleshipApplication {
 									  ScoreRepository scoreRepository) {
 		return (args) -> {
 			// make TEST players
-			Player jack = playerRepository.save(new Player("Jack", "Bauer", "j.bauer@ctu.gov"));
-			Player chloe = playerRepository.save(new Player("Chloe", "O'Brian","c.obrian@ctu.gov"));
-			Player kim = playerRepository.save(new Player("Kim", "Bauer","kim_bauer@gmail.com"));
-			Player tony = playerRepository.save(new Player("Tony", "Almeida","t.almeida@ctu.gov"));
+			Player jack = playerRepository.save(new Player("Jack", "Bauer", "j.bauer@ctu.gov", passwordEncoder.encode("24")));
+			Player chloe = playerRepository.save(new Player("Chloe", "O'Brian","c.obrian@ctu.gov",passwordEncoder.encode("42")));
+			Player kim = playerRepository.save(new Player("Kim", "Bauer","kim_bauer@gmail.com",passwordEncoder.encode("kb")));
+			Player tony = playerRepository.save(new Player("Tony", "Almeida","t.almeida@ctu.gov",passwordEncoder.encode("mole")));
 
 			// make TEST games
 			Game game1 = gameRepository.save(new Game(LocalDateTime.now()));
