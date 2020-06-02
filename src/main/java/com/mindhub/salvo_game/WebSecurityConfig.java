@@ -22,7 +22,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 // .antMatchers("/rest/**").denyAll() // no one can  see it.
                 .antMatchers("/api/game_view/**","/web/game_view.html").hasAnyAuthority("ADMIN", "USER");
 
-        // "/web/**", "/api/games" and "/api/players" both have public access rights by omission.
+        // "/web/games.html", "/api/games" and "/api/players" have public access rights by omission.
 
         // http.httpBasic(); BASIC authentication,
         http.formLogin() // form-based authentication

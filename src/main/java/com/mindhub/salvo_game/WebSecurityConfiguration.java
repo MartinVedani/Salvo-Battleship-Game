@@ -32,7 +32,7 @@ public class WebSecurityConfiguration extends GlobalAuthenticationConfigurerAdap
     //PasswordEncoder passwordEncoder;
     // not needed becasue we have @Bean. @Autowired (without @Bean) is used in
     // all other clases that need to encrypt a password. One @Bean in the whole app.
-    // @Bean and @Autowired do not mis in the same class.
+    // @Bean and @Autowired do not mix in the same class.
 
     @Override
     public void init(AuthenticationManagerBuilder auth) throws Exception {

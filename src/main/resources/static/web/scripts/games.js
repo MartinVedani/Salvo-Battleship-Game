@@ -10,6 +10,7 @@ var app = new Vue({
         lastName: null,
         username: null,
         password: null,
+        gameIdOwners: [],
     },
 
     created() {
@@ -26,13 +27,16 @@ var app = new Vue({
 
                 //build scoreBoard
                 app.buildScoreBoard();
+
+                // Identify game creators (owners) and opponents
+                app.buildGameIdOwners();
             })
     },
 
     filters: {
         formatDate: function(date) {
             if (date) {
-                return moment(String(date)).format('MM/DD/YYYY hh:mm:ss a')
+                return moment(String(date)).format('DD-MMM hh:mm a')
             }
         }
     },
@@ -81,23 +85,24 @@ var app = new Vue({
             this.scoreBoard.sort();
         },
 
-        // handler for when user clicks add person
+        // handler for when user clicks add new player
         addPlayer() {
-            var form = document.querySelector('#addPlayer');
+            // var form = document.querySelector('#addPlayer'); // not needed with Vue
             $.post("/api/players", {
                 firstName: this.firstName,
                 lastName: this.lastName,
                 username: this.username,
                 password: this.password,
             }).done(function() {
-                app.login(app.username, app.password)
+                console.log("Success, logging In now ... ");
+                app.login()
             }).fail(function() {
                 console.log("error")
             })
         },
 
-        login(username, password) {
-            var form = document.querySelector('#login');
+        login() {
+            // var form = document.querySelector('#login'); // not needed with Vue
             $.post("/api/login", {
                 username: this.username,
                 password: this.password,
@@ -116,7 +121,77 @@ var app = new Vue({
             }).fail(function() {
                 console.log("error")
             })
-        }
+        },
+
+        // Identify game creators (owners) and opponents
+        buildGameIdOwners() {
+
+            for (i = 0; i < this.games.length; i++) {
+                var game = {
+                    id: this.games[i].id,
+                    created: this.games[i].created,
+                    owner: null,
+                    owner_gpID: null,
+                    ownerJoined: null,
+                    opponent: null,
+                    opponent_gpID: null,
+                    opponentJoined: null,
+                };
+
+                if (this.games[i].gamePlayers[1] == null) {
+
+                    game.owner = this.games[i].gamePlayers[0].player.username;
+                    game.owner_gpID = this.games[i].gamePlayers[0].id;
+                    game.ownerJoinDate = this.games[i].gamePlayers[0].joinDate;
+
+                } else if (this.games[i].gamePlayers[0].id < this.games[i].gamePlayers[1].id) {
+
+                    game.owner = this.games[i].gamePlayers[0].player.username;
+                    game.owner_gpID = this.games[i].gamePlayers[0].id;
+                    game.ownerJoinDate = this.games[i].gamePlayers[0].joinDate;
+
+                    game.opponent = this.games[i].gamePlayers[1].player.username;
+                    game.opponent_gpID = this.games[i].gamePlayers[1].id;
+                    game.opponentJoinDate = this.games[i].gamePlayers[1].joinDate;
+
+                } else {
+
+                    game.owner = this.games[i].gamePlayers[1].player.username;
+                    game.owner_gpID = this.games[i].gamePlayers[1].id;
+                    game.ownerJoinDate = this.games[i].gamePlayers[1].joinDate;
+
+                    game.opponent = this.games[i].gamePlayers[0].player.username;
+                    game.opponent_gpID = this.games[i].gamePlayers[0].id;
+                    game.opponentJoinDate = this.games[i].gamePlayers[0].joinDate;
+                }
+
+                this.gameIdOwners.push(game)
+            }
+        },
+
+
+        joinGame(gameId) {
+            var urlGpId;
+            app.games.forEach(g => {
+                g.gamePlayers.forEach(gp => {
+                    if (g.id == gameId && gp.player.username == this.player) {
+                        gp.id == urlGpId;
+                    }
+                })
+            })
+            location.href = "/web/game_view.html?gp=" + urlGpId;
+        },
+
+        newGame() {
+            // ...
+            location.href = "/web/game_view.html?gp=" + gamePlayerId;
+        },
+
+        reJoinGame(gamePlayerId) {
+            //....
+            location.href = "/web/game_view.html?gp=" + gamePlayerId;
+        },
+
     }
 });
 

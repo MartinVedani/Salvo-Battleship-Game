@@ -24,14 +24,14 @@
                             <h2>Existing Player login</h2>
                             <label>Player's username [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
                             <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
-                            <button v-on:click="login()" type="button">Existing player login</button>
+                            <button v-on:click="login()" type="button" class="btn btn-sm btn-outline-dark">Log Back In</button>
                         </form>
                     </div>
 
                     <br>
 
-                    <a href="#newUser" class="btn btn-info btn-warning" data-toggle="collapse">If you are a new player click here</a>
-                    <div id="newUser" class="collapse">
+                    <button href="#newUser" class="btn btn-sm btn-outline-info" data-toggle="collapse">If you are a new player click here</button>
+                    <div id="newUser" class="collapse"> <br>
                        
                         <form id="addPlayer">
                              <h2>New Player Sign Up</h2>
@@ -39,7 +39,7 @@
                              <label>Player's Last Name: <input v-model:value="lastName" type="text" size="30"></label><br>
                              <label>Player's Email [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
                              <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
-                             <button v-on:click="addPlayer()" type="button">Create New Player</button>
+                             <button v-on:click="addPlayer()" class="btn btn-sm btn-outline-dark" type="button">Create New Player</button>
                         </form>
                     </div>
                 </template>
@@ -47,12 +47,13 @@
                 <form v-else id="logout">
                     <h4>Current player: </h4>
                     <span>{{ player.username }} </span>
-                    <span><small><i>(if this is not you please log out)</i></small><br>
-                    <button v-on:click="logout()" type="button">Log out</button>
+                    <span><small><i>(if this is not you please log out)  </i></small>
+                    <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button"> Log out </button>
                 </form>
 
             </div>
         </div>
+        
         <hr>
         <div class="row align-items-center">
             <div class="col">
@@ -83,10 +84,17 @@
             </div>
         </div>
 
+        <hr>
+
         <div class="row align-items-center">
             <div class="col">
                 <h2> Salvo Games </h2>
-
+                
+                <template>
+                    <button v-if=" player != 'Guest' " v-on:click="newGame()" class=" btn btn-sm btn-outline-primary"> 
+                        Create New Game </button> <br><br>
+                </template>
+            
                 <div class="table-responsive text-center">
                     <table class="table-striped table-hover table-sm" id="gamesTable">
                         <thead>
@@ -105,13 +113,49 @@
                             </tr>
                         </thead>
                         <tbody id="table-data-body">
-                            <tr v-for="game in games">
-                                <td>{{ game.id}}</td>
+                            <tr v-for="game in gameIdOwners">
+                                <td>{{ game.id }}</td>
                                 <td>{{ game.created | formatDate }}</td>
-                                <td>{{ game.gamePlayers[0].player.username }}</td>
-                                <td>{{ game.gamePlayers[0].joinDate | formatDate }}</td>
-                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].player.username : '' }}</td>
-                                <td>{{ game.gamePlayers[1] != null ? game.gamePlayers[1].joinDate : '' | formatDate}}</td>
+                                <td>{{ game.owner }}</td>
+
+                                <template v-if="game.owner == player.username">
+                                    <td><button v-on:click="reJoinGame(game.owner_gpID)" class=" btn btn-sm btn-warning">
+                                        Re-Join Game </button>
+                                    </td>
+                                </template>
+                                <template v-else>
+                                    <td>{{ game.ownerJoinDate | formatDate }}</td>
+                                </template>
+                                
+                                <template v-if="game.opponent == null && game.owner != player.username && player != 'Guest'">
+                                    <td colspan="2"><button v-on:click="joinGame(game.id)" class=" btn btn-sm btn-success">
+                                        Join Game </button></td>
+                                </template>
+                                
+                                <template v-else-if="game.opponent == null && game.owner == player.username">
+                                    <td colspan="2"><button class="btn btn-sm btn-danger">
+                                        Waiting for opponent</button></td>
+                                </template>
+
+                                <template v-else-if="game.opponent == null && player == 'Guest'">
+                                    <td colspan="2"><button class="btn btn-sm btn-danger">
+                                        Waiting for opponent</button></td>
+                                </template>
+                            
+                                <template v-else>
+                                    <td>{{ game.opponent != null ? game.opponent : '' }}</td>
+
+
+                                    <template v-if="game.opponent == player.username">
+                                        <td><button v-on:click="reJoinGame(game.opponent_gpID)" class=" btn btn-sm btn-warning">
+                                            Re-Join Game </button>
+                                        </td>
+                                    </template>
+                                    <template v-else>
+                                        <td>{{ game.opponent != null ? game.opponentJoinDate : '' | formatDate}}</td>
+                                    </template>
+
+                                </template>
                             </tr>
                         </tbody>
                     </table>

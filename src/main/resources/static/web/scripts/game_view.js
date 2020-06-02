@@ -1,10 +1,13 @@
 // encodeURIComponent(string) returns a copy of the string with any special characters replaced by the required codes
 // decodeURIComponent(string) returns a copy of the string with any encodings replaced by the special characters they encoded
 
+
+
 var url = "/api/game_view/";
 const urlParams = new URLSearchParams(window.location.search);
 const gpUrl = urlParams.get('gp');
 url = url + gpUrl;
+
 
 //var gpId = paramObj(location.search);
 
@@ -87,6 +90,19 @@ var app = new Vue({
                         }
                     }
                 })
+            })
+        },
+
+        gamesHome() {
+            location.href = "/web/games.html";
+        },
+
+        logout() {
+            $.post("/api/logout").done(function() {
+                console.log("logged out!");
+                location.href = "/web/games.html";
+            }).fail(function() {
+                console.log("error")
             })
         },
     },

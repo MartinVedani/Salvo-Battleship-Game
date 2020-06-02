@@ -15,6 +15,18 @@
 <body>
     <div class="container-fluid" id="app">
 
+        <h4>Current player: </h4>
+        <span>{{ owner }} </span>
+        <span><small><i>(if this is not you please log out)  </i></small><br>
+        <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button"> Log out </button>
+    
+        <template>
+            <button v-on:click="gamesHome()" class=" btn btn-sm btn-outline-primary"> 
+                Return to Games Home Page </button>
+        </template>
+
+<hr>
+
         <h3> Game # {{games != null ? games.gameId : '' }} </h3>
 
         <div class="row justify-content-center align-self-center">
