@@ -107,7 +107,7 @@ public class GamePlayer {
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
-        dto.put("id", this.id);
+        dto.put("gpId", this.id);
         dto.put("joinDate", this.joinDate);
         dto.put("player", this.getPlayer().playerDTO());
         Score gamePlayerScore = this.getGamePlayerScore();

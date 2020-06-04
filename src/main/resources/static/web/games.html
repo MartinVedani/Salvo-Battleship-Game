@@ -91,7 +91,7 @@
                 <h2> Salvo Games </h2>
                 
                 <template>
-                    <button v-if=" player != 'Guest' " v-on:click="newGame()" class=" btn btn-sm btn-outline-primary"> 
+                    <button v-if=" player != 'Guest' " v-on:click="createGame()" class=" btn btn-sm btn-outline-primary"> 
                         Create New Game </button> <br><br>
                 </template>
             
@@ -126,25 +126,20 @@
                                 <template v-else>
                                     <td>{{ game.ownerJoinDate | formatDate }}</td>
                                 </template>
-                                
-                                <template v-if="game.opponent == null && game.owner != player.username && player != 'Guest'">
+                                                                
+                                <template v-if="game.opponent == null && (game.owner == player.username || player == 'Guest')">
+                                    <td colspan="2"><button class="btn btn-sm btn-danger">
+                                        Waiting for opponent</button></td>
+                                </template>
+
+                                <template v-else-if="game.opponent == null && game.owner != player.username && player != 'Guest'">
                                     <td colspan="2"><button v-on:click="joinGame(game.id)" class=" btn btn-sm btn-success">
                                         Join Game </button></td>
                                 </template>
-                                
-                                <template v-else-if="game.opponent == null && game.owner == player.username">
-                                    <td colspan="2"><button class="btn btn-sm btn-danger">
-                                        Waiting for opponent</button></td>
-                                </template>
-
-                                <template v-else-if="game.opponent == null && player == 'Guest'">
-                                    <td colspan="2"><button class="btn btn-sm btn-danger">
-                                        Waiting for opponent</button></td>
-                                </template>
                             
                                 <template v-else>
-                                    <td>{{ game.opponent != null ? game.opponent : '' }}</td>
 
+                                    <td>{{ game.opponent != null ? game.opponent : '' }}</td>
 
                                     <template v-if="game.opponent == player.username">
                                         <td><button v-on:click="reJoinGame(game.opponent_gpID)" class=" btn btn-sm btn-warning">
@@ -156,6 +151,7 @@
                                     </template>
 
                                 </template>
+
                             </tr>
                         </tbody>
                     </table>

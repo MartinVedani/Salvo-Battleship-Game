@@ -55,7 +55,7 @@ var app = new Vue({
     methods: {
         getPlayersInfo() {
             this.games.gamePlayers.forEach(gp => {
-                if (gp.id == gpUrl) {
+                if (gp.gpId == gpUrl) {
                     this.owner = gp.player.username
                 } else {
                     this.opponent = gp.player.username

@@ -43,6 +43,129 @@ var app = new Vue({
 
     methods: {
 
+        /* jQuery method with $.post. It is EASIER but OLDER than fetch. 
+        Fetch is also native of javascript and does not require us to load jQuery as an additional library.
+
+        addPlayer() {
+            // Create a new player and then log in
+            // var form = document.querySelector('#addPlayer'); // not needed with Vue
+            $.post("/api/players", {
+                firstName: this.firstName,
+                lastName: this.lastName,
+                username: this.username,
+                password: this.password,
+            }).done(function() {
+                console.log("Success, logging In now ... ");
+                app.login()
+            }).fail(function() {
+                console.log("error")
+            })
+        },
+        */
+
+        addPlayer() { //metodo 1 con fetch en vez de jquery $.post
+            const searchParams = new URLSearchParams();
+            searchParams.set('firstName', this.firstName);
+            searchParams.set('lastName', this.lastName);
+            searchParams.set('username', this.username);
+            searchParams.set('password', this.password);
+            fetch('/api/players', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+
+                    body: searchParams
+
+                })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json()
+                    } else {
+                        return Promise.reject(res.json())
+                    }
+                })
+                .then(json => {
+                    console.log(json)
+                    app.login()
+                })
+                .catch(error => error)
+                .then(error => console.log(error))
+        },
+
+        login() { //metodo 2 con fetch en vez de jquery $.post
+            fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+
+                    body: 'username=' + this.username + '&password=' + this.password
+                        // "&param_name" is required for adding parameters
+
+                })
+                .then(function() {
+                    console.log("logged In!");
+                    location.reload();
+                })
+                .catch(error => error)
+                .then(error => console.log(error))
+        },
+
+        logout() {
+            $.post("/api/logout").done(function() {
+                console.log("logged out!");
+                location.reload();
+            }).fail(function() {
+                console.log("error")
+            })
+        },
+
+        createGame() {
+            // POST to create a new Game and new gamePlayer => "/api/games"
+            fetch('/api/games', {
+                    method: 'POST'
+                })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json()
+                    } else {
+                        return Promise.reject(res.json())
+                    }
+                })
+                .then(json => {
+                    console.log(json)
+                    app.reJoinGame(json.gpId)
+                })
+                .catch(error => error)
+                .then(error => console.log(error))
+        },
+
+        joinGame(gameId) {
+            // POST to create a new gamePlayer for an existing gameId => "/api/games/{gameId}/players"
+            fetch("/api/games/" + gameId + "/players", {
+                    method: 'POST'
+                })
+                .then(res => {
+                    if (res.ok) {
+                        return res.json()
+                    } else {
+                        return Promise.reject(res.json())
+                    }
+                })
+                .then(json => {
+                    console.log(json)
+                    app.reJoinGame(json.gpId)
+                })
+                .catch(error => error)
+                .then(error => console.log(error))
+        },
+
+        reJoinGame(gamePlayerId) {
+            //Navigate to game page re-using an existing gamePlayerId => "/web/game_view.html?gp=gamePlayerId"
+            location.href = "/web/game_view.html?gp=" + gamePlayerId;
+        },
+
         buildScoreBoard() {
             /* var players_withScore = [];
             this.games.forEach(g => {
@@ -85,47 +208,8 @@ var app = new Vue({
             this.scoreBoard.sort();
         },
 
-        // handler for when user clicks add new player
-        addPlayer() {
-            // var form = document.querySelector('#addPlayer'); // not needed with Vue
-            $.post("/api/players", {
-                firstName: this.firstName,
-                lastName: this.lastName,
-                username: this.username,
-                password: this.password,
-            }).done(function() {
-                console.log("Success, logging In now ... ");
-                app.login()
-            }).fail(function() {
-                console.log("error")
-            })
-        },
-
-        login() {
-            // var form = document.querySelector('#login'); // not needed with Vue
-            $.post("/api/login", {
-                username: this.username,
-                password: this.password,
-            }).done(function() {
-                console.log("logged In!");
-                location.reload();
-            }).fail(function() {
-                console.log("error")
-            })
-        },
-
-        logout() {
-            $.post("/api/logout").done(function() {
-                console.log("logged out!");
-                location.reload();
-            }).fail(function() {
-                console.log("error")
-            })
-        },
-
-        // Identify game creators (owners) and opponents
         buildGameIdOwners() {
-
+            // Identify and organize game creators (owners) and opponents
             for (i = 0; i < this.games.length; i++) {
                 var game = {
                     id: this.games[i].id,
@@ -141,27 +225,27 @@ var app = new Vue({
                 if (this.games[i].gamePlayers[1] == null) {
 
                     game.owner = this.games[i].gamePlayers[0].player.username;
-                    game.owner_gpID = this.games[i].gamePlayers[0].id;
+                    game.owner_gpID = this.games[i].gamePlayers[0].gpId;
                     game.ownerJoinDate = this.games[i].gamePlayers[0].joinDate;
 
-                } else if (this.games[i].gamePlayers[0].id < this.games[i].gamePlayers[1].id) {
+                } else if (this.games[i].gamePlayers[0].gpId < this.games[i].gamePlayers[1].gpId) {
 
                     game.owner = this.games[i].gamePlayers[0].player.username;
-                    game.owner_gpID = this.games[i].gamePlayers[0].id;
+                    game.owner_gpID = this.games[i].gamePlayers[0].gpId;
                     game.ownerJoinDate = this.games[i].gamePlayers[0].joinDate;
 
                     game.opponent = this.games[i].gamePlayers[1].player.username;
-                    game.opponent_gpID = this.games[i].gamePlayers[1].id;
+                    game.opponent_gpID = this.games[i].gamePlayers[1].gpId;
                     game.opponentJoinDate = this.games[i].gamePlayers[1].joinDate;
 
                 } else {
 
                     game.owner = this.games[i].gamePlayers[1].player.username;
-                    game.owner_gpID = this.games[i].gamePlayers[1].id;
+                    game.owner_gpID = this.games[i].gamePlayers[1].gpId;
                     game.ownerJoinDate = this.games[i].gamePlayers[1].joinDate;
 
                     game.opponent = this.games[i].gamePlayers[0].player.username;
-                    game.opponent_gpID = this.games[i].gamePlayers[0].id;
+                    game.opponent_gpID = this.games[i].gamePlayers[0].gpId;
                     game.opponentJoinDate = this.games[i].gamePlayers[0].joinDate;
                 }
 
@@ -169,33 +253,10 @@ var app = new Vue({
             }
         },
 
-
-        joinGame(gameId) {
-            var urlGpId;
-            app.games.forEach(g => {
-                g.gamePlayers.forEach(gp => {
-                    if (g.id == gameId && gp.player.username == this.player) {
-                        gp.id == urlGpId;
-                    }
-                })
-            })
-            location.href = "/web/game_view.html?gp=" + urlGpId;
-        },
-
-        newGame() {
-            // ...
-            location.href = "/web/game_view.html?gp=" + gamePlayerId;
-        },
-
-        reJoinGame(gamePlayerId) {
-            //....
-            location.href = "/web/game_view.html?gp=" + gamePlayerId;
-        },
-
     }
 });
 
-// AJAX Feed for developing
+// JSON Feed for help developing
 
 $(function() {
 
