@@ -43,47 +43,36 @@ var app = new Vue({
 
     methods: {
 
-        /* jQuery method with $.post. It is EASIER but OLDER than fetch. 
-        Fetch is also native of javascript and does not require us to load jQuery as an additional library.
-
-        addPlayer() {
-            // Create a new player and then log in
-            // var form = document.querySelector('#addPlayer'); // not needed with Vue
-            $.post("/api/players", {
-                firstName: this.firstName,
-                lastName: this.lastName,
-                username: this.username,
-                password: this.password,
-            }).done(function() {
-                console.log("Success, logging In now ... ");
-                app.login()
-            }).fail(function() {
-                console.log("error")
-            })
+        collapseAll: function() {
+            // Hide HTML object "login form" or "create new user" form
+            $('.collapse').collapse('hide');
         },
-        */
 
-        addPlayer() { //metodo 1 con fetch en vez de jquery $.post
-            const searchParams = new URLSearchParams();
-            searchParams.set('firstName', this.firstName);
-            searchParams.set('lastName', this.lastName);
-            searchParams.set('username', this.username);
-            searchParams.set('password', this.password);
+        addPlayer(event) {
+            // Create a new player with methods 1 and 2 using pure javascript and fetch instead of 
+            // jquery $.post like in method 3 for login below.
+
+            // Method 1 - using "event" and "formData" is the most efficient, less prone to errors than method 2 
+            // for the body of fetch, but it takes more coding in the HTML forms (see and compare addPlayer vs. login forms)
+            event.preventDefault();
+            let formData = new FormData(event.target);
+
             fetch('/api/players', {
                     method: 'POST',
+
+                    // Method 1 - continued
+                    body: formData,
+
+                    /* 
+                    Method 2, manual construction of the body using Vue data (without "event" and "formData")
+                    which is more prone to errors than method 1
+
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                       'Content-Type': 'application/x-www-form-urlencoded'
                     },
 
-                    body: searchParams
-
-                })
-                .then(res => {
-                    if (res.ok) {
-                        return res.json()
-                    } else {
-                        return Promise.reject(res.json())
-                    }
+                    body: 'firstName=' + this.firstName +'&lastName=' + this.lastName + '&username=' + this.username + '&password=' + this.password
+                    */
                 })
                 .then(json => {
                     console.log(json)
@@ -93,32 +82,35 @@ var app = new Vue({
                 .then(error => console.log(error))
         },
 
-        login() { //metodo 2 con fetch en vez de jquery $.post
-            fetch('/api/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-
-                    body: 'username=' + this.username + '&password=' + this.password
-                        // "&param_name" is required for adding parameters
-
-                })
-                .then(function() {
-                    console.log("logged In!");
-                    location.reload();
-                })
-                .catch(error => error)
-                .then(error => console.log(error))
-        },
-
-        logout() {
-            $.post("/api/logout").done(function() {
-                console.log("logged out!");
-                location.reload();
+        login() {
+            // Method 3 - jQuery using Vue data, the easiest to code
+            // var form = document.querySelector('#login'); // not needed to get the html login form when using Vue data
+            $.post("/api/login", {
+                username: this.username,
+                password: this.password,
+            }).done(function() {
+                console.log("Success, logging In now ... ");
+                location.reload()
             }).fail(function() {
                 console.log("error")
             })
+        },
+
+        logout() {
+            // jQuery and fetch combined just for show
+            if (this.player.username == "j.bauer@ctu.gov") {
+
+                fetch("/api/logout").then(() => location.reload());
+
+            } else {
+
+                $.post("/api/logout").done(function() {
+                    console.log("logged out!");
+                    location.reload();
+                }).fail(function() {
+                    console.log("error")
+                })
+            }
         },
 
         createGame() {

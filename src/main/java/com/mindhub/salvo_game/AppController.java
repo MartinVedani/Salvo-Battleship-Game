@@ -9,10 +9,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -52,16 +49,6 @@ public class AppController {
     // quiero mostrar y de la forma que la quiero mostrar. Por ejemplo, me permite evitar que se muestren
     // passwords.
 
-    // Two private methods we will use for GET and POST
-    private boolean isGuest(Authentication authentication){
-        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
-    }
-
-    private Map<String, Object> makeMap(String key, Object value) {
-        Map<String, Object> map = new HashMap<>();
-        map.put(key, value);
-        return map;
-    }
 
     // GET to get the complete list of games
     @GetMapping("/games")
@@ -156,5 +143,136 @@ public class AppController {
             }
         }
         return response;
+    }
+
+    //POST for gameplayer to add ships to games
+    @PostMapping("/games/players/{gamePlayerId}/ships")
+    public ResponseEntity<Map<String, Object>> addShips(Authentication authentication,
+                                                        @PathVariable long gamePlayerId,
+                                                        @RequestBody List<Ship> ships){
+        ResponseEntity<Map<String, Object>> response;
+        if(isGuest(authentication)) {
+            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.UNAUTHORIZED);
+        } else {
+            Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
+            Player player = playerRepository.findPlayerByUsername(authentication.getName());
+            if(!gamePlayer.isPresent()){
+                response = new ResponseEntity<>(makeMap("error", "No such game!"), HttpStatus.NOT_FOUND);
+            } else if (gamePlayer.get().getPlayer().getId() != player.getId()){
+                response = new ResponseEntity<>(makeMap("error", "this is not your game"), HttpStatus.UNAUTHORIZED);
+            } else if (gamePlayer.get().getShips().size() > 0){
+                // getShips() = 1 would be 1 complete array of 5 ships
+                response = new ResponseEntity<>(makeMap("error", "All your ships have been placed"), HttpStatus.FORBIDDEN);
+            } else if (ships == null || ships.size() != 5){
+                response = new ResponseEntity<>(makeMap("error","You must add 5 ships"), HttpStatus.FORBIDDEN);
+            } else {
+                if(ships.stream().anyMatch(ship -> this.isOutOfRange(ship))){
+                    response = new ResponseEntity<>(makeMap("error","you have ships out of range"), HttpStatus.FORBIDDEN);
+                } else if (ships.stream().anyMatch(ship -> isNotConsecutive(ship))) {
+                    response = new ResponseEntity<>(makeMap("error","you ships are not consecutive"), HttpStatus.FORBIDDEN);
+                } else if (this.areOverlapped(ships)){
+                    response = new ResponseEntity<>(makeMap("error","you ships are overlapped"), HttpStatus.FORBIDDEN);
+                } else {
+                    ships.forEach(ship -> gamePlayer.get().addShip(ship));
+                    gamePlayerRepository.save(gamePlayer.get());
+                    response = new ResponseEntity<>(makeMap("success", "Ships added!"), HttpStatus.CREATED);
+                }
+            }
+        }
+        return response;
+    }
+
+    //Test Ship coordinates are NOT out of range
+    private boolean isOutOfRange(Ship ship){
+        for(String cell : ship.getShipLocations()){
+            // (for each cell cordinate in shipLocation)
+            if(!(cell instanceof String) || cell.length() < 2){
+                // if not of type String or less than two digits (i.e. not A1)
+                return true;
+            }
+            char y = cell.substring(0,1).charAt(0); //first digit in the coordinate of "character" type
+            Integer x;
+            try {
+                x = Integer.parseInt(cell.substring(1)); // second digit in the coordinate in "Integer" type
+            } catch (NumberFormatException e){
+                x = 99; // if second character not integer, set a high number to catch error on next "if"
+            };
+            if (x < 1 || x > 10 || y < 'A' || y > 'J'){
+                return true;
+            }
+        }
+        return false; // all tests passed successfully
+    }
+
+    //Test Ship coordinates are consecutive
+    private boolean isNotConsecutive(Ship ship){
+        List<String> cells = ship.getShipLocations();
+        // rows are identified with LETTERS, columns are identified with NUMBER.
+        boolean isVertical = cells.get(0).charAt(0) != cells.get(1).charAt(0);
+        //compare the letters in first 2 coordinates, if not equal then vertical is TRUE.
+
+        for(int i = 0; i < cells.size(); i++){
+            if(i < cells.size() - 1){
+                if(isVertical){
+                    //compare if LETTERS are consecutive
+                    char yChar = cells.get(i).substring(0,1).charAt(0);
+                    char compareChar = cells.get(i + 1).substring(0,1).charAt(0);
+                    if(compareChar - yChar != 1){
+                        return true; //not consecutive (yes, you can substract characters as numbers)
+                    }
+                } else {
+                    //compare if the NUMBERS are consecutive
+                    Integer xInt = Integer.parseInt(cells.get(i).substring(1));
+                    Integer compareInt = Integer.parseInt(cells.get(i + 1).substring(1));
+                    if(compareInt - xInt != 1){
+                        return true; //not consecutive
+                    }
+                }
+            }
+
+            for (int j = i + 1; j < cells.size(); j++) {
+
+                if(isVertical){
+                    // compare all the NUMBERS are the same
+                    if(!cells.get(i).substring(1).equals(cells.get(j).substring(1))){
+                        return true;
+                    }
+                } else {
+                    // compare all the LETTERS are the same
+                    if(!cells.get(i).substring(0,1).equals(cells.get(j).substring(0,1))){
+                        return true;
+                    }
+                }
+            }
+        }
+        return false; // all tests passed successfully
+    }
+
+    //Test Ship coordinates DO NOT overlap (do not repeat)
+    private boolean areOverlapped(List<Ship> ships){
+        List<String> allCells = new ArrayList<>();
+
+        ships.forEach(ship -> allCells.addAll(ship.getShipLocations()));
+
+        for(int i = 0; i < allCells.size(); i++ ){
+            for(int j = i + 1; j < allCells.size(); j++){
+                // compare each cell "i" against ALL other cells "j"
+                if(allCells.get(i).equals(allCells.get(j))){
+                    return true;
+                }
+            }
+        }
+        return false; // all tests passed successfully
+    }
+
+    // Two private methods we used above for GET and POST responses
+    private Map<String, Object> makeMap(String key, Object value) {
+        Map<String, Object> map = new HashMap<>();
+        map.put(key, value);
+        return map;
+    }
+
+    private boolean isGuest(Authentication authentication){
+        return authentication == null || authentication instanceof AnonymousAuthenticationToken;
     }
 }

@@ -9,37 +9,43 @@
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
     <!-- My STYLES -->
-    <link rel="stylesheet" href="scripts/main.css">
+    <link rel="stylesheet" href="style/main.css">
 </head>
 
 <body>
     <div class="container-fluid" id="app">
-
         <div class="row align-items-center">
             <div class="col">
 
                 <template v-if=" player == 'Guest' ">
-                    <div>
+                    <br>
+                    <button data-target="#existingUser" class="btn btn-sm if-collapsed btn-outline-primary" data-toggle="collapse" v-on:click="collapseAll">
+                        Existing Player login
+                    </button>
+
+                    <button data-target="#newUser" class="btn btn-sm btn-outline-dark" data-toggle="collapse" v-on:click="collapseAll">
+                        If you are a new player click here
+                    </button>
+
+                    <div id="existingUser" class="collapse in show"> <br>
                         <form id="login">
-                            <h2>Existing Player login</h2>
                             <label>Player's username [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
                             <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
-                            <button v-on:click="login()" type="button" class="btn btn-sm btn-outline-dark">Log Back In</button>
-                        </form>
+                            <button type="button" class="btn btn-sm btn-dark" v-on:click="login()">
+                                Log Back In</button>
+                                <!-- when using Vue, v-on:click="login()" goes with the button -->
+                        </form>                  
                     </div>
 
-                    <br>
-
-                    <button href="#newUser" class="btn btn-sm btn-outline-info" data-toggle="collapse">If you are a new player click here</button>
-                    <div id="newUser" class="collapse"> <br>
-                       
-                        <form id="addPlayer">
+                    <div id="newUser" class="collapse"> <br>   
+                        <form id="addPlayer" v-on:submit="addPlayer($event)">
+                            <!-- when using pure .js, onsubmit="addPlayer(event)" goes at form level -->
                              <h2>New Player Sign Up</h2>
-                             <label>Player's First Name: <input v-model:value="firstName" type="text" size="30"></label><br>
-                             <label>Player's Last Name: <input v-model:value="lastName" type="text" size="30"></label><br>
-                             <label>Player's Email [e.g., alice@aol.com]: <input v-model:value="username" type="text" size="30"></label><br>
-                             <label>Player's password: <input v-model:value="password" type="password" size="30"></label><br>
-                             <button v-on:click="addPlayer()" class="btn btn-sm btn-outline-dark" type="button">Create New Player</button>
+                             <label>Player's First Name: <input name="firstName" type="text" v-model:value="firstName" size="30"></label><br>
+                             <label>Player's Last Name: <input name="lastName" type="text" v-model:value="lastName" size="30"></label><br>
+                             <label>Player's Email [e.g., alice@aol.com]: <input name="username" type="text" v-model:value="username" size="30"></label><br>
+                             <label>Player's password: <input name="password" type="password" v-model:value="password" size="30"></label><br>
+                             <button class="btn btn-sm btn-dark" type="submit"> Create New Player </button>
                         </form>
                     </div>
                 </template>

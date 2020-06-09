@@ -84,12 +84,24 @@ public class GamePlayer {
         this.game = game;
     }
 
+    // add ship
+    public void addShip(Ship ship) {
+        this.ships.add(ship);
+        ship.setGamePlayer(this);
+    }
+
     public Set<Ship> getShips() {
         return ships;
     }
 
     public void setShips(Set<Ship> ships) {
         this.ships = ships;
+    }
+
+    // add salvo
+    public void addSalvo(Salvo salvo) {
+        this.salvos.add(salvo);
+        salvo.setGamePlayer(this);
     }
 
     public Set<Salvo> getSalvos() {

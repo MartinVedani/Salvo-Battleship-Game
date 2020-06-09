@@ -8,29 +8,21 @@
 
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+
+    <!-- GridStack dependencias css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack-extra.css" />
+    <link rel="stylesheet" href="style/GridStackStyle.css">
+
     <!-- My STYLES -->
-    <link rel="stylesheet" href="scripts/main.css">
+    <link rel="stylesheet" href="style/main.css">
 </head>
 
 <body>
+
     <div class="container-fluid" id="app">
-
-        <h4>Current player: </h4>
-        <span>{{ owner }} </span>
-        <span><small><i>(if this is not you please log out)  </i></small><br>
-        <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button"> Log out </button>
-    
-        <template>
-            <button v-on:click="gamesHome()" class=" btn btn-sm btn-outline-primary"> 
-                Return to Games Home Page </button>
-        </template>
-
-<hr>
-
-        <h3> Game # {{games != null ? games.gameId : '' }} </h3>
-
+        <hr>
         <div class="row justify-content-center align-self-center">
-
             <div class="col">
                 <div class="table-responsive">
                     <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
@@ -46,17 +38,70 @@
                                 <td>{{ games.gameId }}</td>
                                 <td>{{ owner }}</td>
                                 <td>{{ opponent != null ? opponent : '' }}</td>
-
                             </tr>
                         </tbody>
                     </table>
+                    <br>
+                    <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button"> 
+                        Log out 
+                    </button>
+
+                    <button v-on:click="gamesHome()" class=" btn btn-sm btn-outline-primary"> 
+                        Return to Games Home Page 
+                    </button>
+
                 </div>
             </div>
         </div>
 
+        <hr>
+
         <div class="row justify-content-center align-self-center">
+
+            <div class="col">
+
+                <div>
+                    <template v-if="staticGrid == false">
+                    <h2>Place your Ships</h2>
+                    <p>Drag and drop, click to rotate 90º</p>
+                    </template>
+
+                    <template v-else>
+                    <h2>Your Ships</h2>
+                    </template>
+                </div>
+
+                <!-- GridStack -->
+                <!-- div solo para colocar el borde y posicionar en base a la altura y anchura-->
+                <div id="grid-ships" v-if="staticGrid == false">
+                    <!-- div que usa la librería gridstack-->
+                    <div id="grid" class="grid-stack grid-stack-10">
+                    </div>
+                </div>
+
+                <div id="grid-ships" v-else>
+                    <!-- div que usa la librería gridstack-->
+                    <div id="grid" class="grid-stack grid-stack-10">
+                    </div>
+                </div>
+
+                <br>
+
+                <button v-if="staticGrid == false" v-on:click="placeShips()" type="button" class=" btn btn-sm btn-danger"> 
+                    Lock your ships in place and begin battle 
+                </button>
+
+            </div>
+        </div>
+
+        <hr>
+
+        <div class="row justify-content-center align-self-center">
+
             <div class="col-6">
+
                 <h3> Your Ships </h3>
+
                 <div class="table-responsive text-center">
                     <table class="table-hover table-sm align-middle naval_grid" id="ships_grid">
                         <thead>
@@ -75,7 +120,9 @@
             </div>
 
             <div class="col-6">
+
                 <h3> Your Shots </h3>
+
                 <div class="table-responsive text-center">
                     <table class="table-hover table-sm align-middle naval_grid" id="salvos_grid">
                         <thead>
@@ -93,10 +140,9 @@
                 </div>
             </div>
         </div>
-
-        <pre id="output"></pre>
-
     </div>
+
+    <pre id="output"></pre>
 
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -112,6 +158,10 @@
 
     <!-- moments.js -->
     <script src="scripts/moment-with-locales.min.js"></script>
+
+    <!-- GridStack dependencia js -->
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>
+    <script src="scripts/jquery.ui.touch-punch.min.js"></script>
 
     <!-- My Scripts -->
     <script src="scripts/game_view.js"></script>
