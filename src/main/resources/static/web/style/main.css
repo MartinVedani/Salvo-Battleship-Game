@@ -1,3 +1,7 @@
+.naval_grid {
+    background-color: lightblue;
+}
+
 :root {
     --main-color: #007bff;
     --text-color: #f7f7f7;
@@ -10,10 +14,6 @@ td {
     border: 1px solid black;
     text-align: center;
     padding: 8px;
-}
-
-.naval_grid {
-    background-color: lightblue;
 }
 
 th {

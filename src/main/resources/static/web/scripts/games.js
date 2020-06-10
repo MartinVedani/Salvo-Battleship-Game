@@ -93,6 +93,7 @@ var app = new Vue({
                 location.reload()
             }).fail(function() {
                 console.log("error")
+                alert("Something went wrong, try again!")
             })
         },
 
@@ -109,6 +110,7 @@ var app = new Vue({
                     location.reload();
                 }).fail(function() {
                     console.log("error")
+                    alert("Something went wrong, try again!")
                 })
             }
         },

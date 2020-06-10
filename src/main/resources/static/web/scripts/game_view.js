@@ -1,8 +1,6 @@
 // encodeURIComponent(string) returns a copy of the string with any special characters replaced by the required codes
 // decodeURIComponent(string) returns a copy of the string with any encodings replaced by the special characters they encoded
 
-
-
 var url = "/api/game_view/";
 const urlParams = new URLSearchParams(window.location.search);
 const gpUrl = urlParams.get('gp');
@@ -18,44 +16,20 @@ var app = new Vue({
         owner: "",
         opponent: "",
 
+        // for widgetDETAIL()
+        shipsInGrid: [],
         staticGrid: false,
 
-        submarine: null,
-        submarineGSX: '',
-        submarineGSY: '',
-        submarineDIV: '<div><div id="submarine" class="grid-stack-item-content submarineVertical"></div><div/>',
-        submarineWidth: 1,
-        submarineHeight: 3,
-
-        carrier: null,
-        carrierGSX: '',
-        carrierGSY: '',
-        carrierDIV: '<div><div id="carrier" class="grid-stack-item-content carrierVertical"></div><div/>',
-        carrierWidth: 1,
-        carrierHeight: 4,
-
-        patrol: null,
-        patrolGSX: '',
-        patrolGSY: '',
-        patrolDIV: '<div><div id="patrol" class="grid-stack-item-content patrolHorizontal"></div><div/>',
-        patrolWidth: 2,
-        patrolHeight: 1,
-
-        destroyer: null,
-        destroyerGSX: '',
-        destroyerGSY: '',
-        destroyerDIV: '<div><div id="destroyer" class="grid-stack-item-content destroyerHorizontal"></div><div/>',
-        destroyerWidth: 3,
-        destroyerHeight: 1,
-
-        battleship: null,
-        battleshipGSX: '',
-        battleshipGSY: '',
-        battleshipDIV: '<div><div id="battleship" class="grid-stack-item-content battleshipHorizontal"></div><div/>',
-        battleshipWidth: 5,
-        battleshipHeight: 1,
-
+        // for printSalvos()
         placedShips: [],
+
+        //for placeShips()
+        submarine: null,
+        carrier: null,
+        patrol: null,
+        destroyer: null,
+        battleship: null,
+
         numbers: ["", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
         yDictionary: { 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J' },
@@ -166,106 +140,101 @@ var app = new Vue({
             }
             // patrol, submarine, destroyer, carrier, battleship    
             this.games.ships.forEach(ship => {
-                if (ship.type == "patrol") {
+                switch (ship.type) {
+                    case 'patrol':
+                        //PATROL: 2x1
+                        var varX = ship.shipLocation[0].slice(1);
+                        var varY = ship.shipLocation[0][0];
+                        var content = '<div><div id="patrol" class="grid-stack-item-content patrol' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var W = varY == ship.shipLocation[1][0] ? 2 : 1;
+                        var H = varY == ship.shipLocation[1][0] ? 1 : 2;
 
-                    if (ship.shipLocation[0].length == 3) {
-                        varX = ship.shipLocation[0][1] + ship.shipLocation[0][2];
-                        this.patrolGSX = this.dictionaryGSX[varX];
-                    } else {
-                        varX = ship.shipLocation[0][1];
-                        this.patrolGSX = this.dictionaryGSX[varX];
-                    }
+                        var widget = {
+                            gsX: this.dictionaryGSX[varX],
+                            gsY: this.dictionaryGSY[varY],
+                            div: content,
+                            width: W,
+                            height: H,
+                        }
 
-                    varY = ship.shipLocation[0][0];
+                        this.shipsInGrid.push(widget);
+                        break;
 
-                    this.patrolGSY = this.dictionaryGSY[varY];
+                    case 'submarine':
+                        //SUBMARINE: 3x1
+                        var varX = ship.shipLocation[0].slice(1);
+                        var varY = ship.shipLocation[0][0];
+                        var content = '<div><div id="submarine" class="grid-stack-item-content submarine' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var W = varY == ship.shipLocation[1][0] ? 3 : 1;
+                        var H = varY == ship.shipLocation[1][0] ? 1 : 3;
 
-                    if (varY != ship.shipLocation[1][0]) {
-                        this.patrolDIV = '<div><div id="patrol" class="grid-stack-item-content patrolVertical"></div><div/>';
-                        this.patrolWidth = 1;
-                        this.patrolHeight = 2;
-                    }
+                        var widget = {
+                            gsX: this.dictionaryGSX[varX],
+                            gsY: this.dictionaryGSY[varY],
+                            div: content,
+                            width: W,
+                            height: H,
+                        }
 
+                        this.shipsInGrid.push(widget);
+                        break;
 
-                } else if (ship.type == "submarine") {
+                    case 'destroyer':
+                        //destroyer: 3x1
+                        var varX = ship.shipLocation[0].slice(1);
+                        var varY = ship.shipLocation[0][0];
+                        var content = '<div><div id="destroyer" class="grid-stack-item-content destroyer' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var W = varY == ship.shipLocation[1][0] ? 3 : 1;
+                        var H = varY == ship.shipLocation[1][0] ? 1 : 3;
 
-                    if (ship.shipLocation[0].length == 3) {
-                        varX = ship.shipLocation[0][1] + ship.shipLocation[0][2];
-                        this.submarineGSX = this.dictionaryGSX[varX];
-                    } else {
-                        varX = ship.shipLocation[0][1];
-                        this.submarineGSX = this.dictionaryGSX[varX];
-                    }
+                        var widget = {
+                            gsX: this.dictionaryGSX[varX],
+                            gsY: this.dictionaryGSY[varY],
+                            div: content,
+                            width: W,
+                            height: H,
+                        }
 
-                    varY = ship.shipLocation[0][0];
+                        this.shipsInGrid.push(widget);
+                        break;
 
-                    this.submarineGSY = this.dictionaryGSY[varY];
+                    case 'carrier':
+                        //carrier: 4x1
+                        var varX = ship.shipLocation[0].slice(1);
+                        var varY = ship.shipLocation[0][0];
+                        var content = '<div><div id="carrier" class="grid-stack-item-content carrier' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var W = varY == ship.shipLocation[1][0] ? 4 : 1;
+                        var H = varY == ship.shipLocation[1][0] ? 1 : 4;
 
-                    if (varY == ship.shipLocation[1][0]) {
-                        this.submarineDIV = '<div><div id="submarine" class="grid-stack-item-content submarineHorizontal"></div><div/>';
-                        this.submarineWidth = 3;
-                        this.submarineHeight = 1;
-                    }
+                        var widget = {
+                            gsX: this.dictionaryGSX[varX],
+                            gsY: this.dictionaryGSY[varY],
+                            div: content,
+                            width: W,
+                            height: H,
+                        }
 
-                } else if (ship.type == "destroyer") {
+                        this.shipsInGrid.push(widget);
+                        break;
 
-                    if (ship.shipLocation[0].length == 3) {
-                        varX = ship.shipLocation[0][1] + ship.shipLocation[0][2];
-                        this.destroyerGSX = this.dictionaryGSX[varX];
-                    } else {
-                        varX = ship.shipLocation[0][1];
-                        this.destroyerGSX = this.dictionaryGSX[varX];
-                    }
+                    case 'battleship':
+                        //battleship: 5x1
+                        var varX = ship.shipLocation[0].slice(1);
+                        var varY = ship.shipLocation[0][0];
+                        var content = '<div><div id="battleship" class="grid-stack-item-content battleship' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var W = varY == ship.shipLocation[1][0] ? 5 : 1;
+                        var H = varY == ship.shipLocation[1][0] ? 1 : 5;
 
-                    varY = ship.shipLocation[0][0];
+                        var widget = {
+                            gsX: this.dictionaryGSX[varX],
+                            gsY: this.dictionaryGSY[varY],
+                            div: content,
+                            width: W,
+                            height: H,
+                        }
 
-                    this.destroyerGSY = this.dictionaryGSY[varY];
-
-                    if (varY != ship.shipLocation[1][0]) {
-                        this.destroyerDIV = '<div><div id="destroyer" class="grid-stack-item-content destroyerVertical"></div><div/>';
-                        this.destroyerWidth = 1;
-                        this.destroyerHeight = 3;
-                    }
-
-                } else if (ship.type == "carrier") {
-
-                    if (ship.shipLocation[0].length == 3) {
-                        varX = ship.shipLocation[0][1] + ship.shipLocation[0][2];
-                        this.carrierGSX = this.dictionaryGSX[varX];
-                    } else {
-                        varX = ship.shipLocation[0][1];
-                        this.carrierGSX = this.dictionaryGSX[varX];
-                    }
-
-                    varY = ship.shipLocation[0][0];
-
-                    this.carrierGSY = this.dictionaryGSY[varY];
-
-                    if (varY == ship.shipLocation[1][0]) {
-                        this.carrierDIV = '<div><div id="carrier" class="grid-stack-item-content carrierHorizontal"></div><div/>';
-                        this.carrierWidth = 4;
-                        this.carrierHeight = 1;
-                    }
-
-                } else if (ship.type == "battleship") {
-
-                    if (ship.shipLocation[0].length == 3) {
-                        varX = ship.shipLocation[0][1] + ship.shipLocation[0][2];
-                        this.battleshipGSX = this.dictionaryGSX[varX];
-                    } else {
-                        varX = ship.shipLocation[0][1];
-                        this.battleshipGSX = this.dictionaryGSX[varX];
-                    }
-
-                    varY = ship.shipLocation[0][0];
-
-                    this.battleshipGSY = this.dictionaryGSY[varY];
-
-                    if (varY != ship.shipLocation[1][0]) {
-                        this.battleshipDIV = '<div><div id="battleship" class="grid-stack-item-content battleshipVertical"></div><div/>';
-                        this.battleshipWidth = 1;
-                        this.battleshipHeight = 5;
-                    }
+                        this.shipsInGrid.push(widget);
+                        break;
                 }
             })
 
@@ -405,6 +374,7 @@ var app = new Vue({
                 location.reload();
             }).fail(function() {
                 console.log("error")
+                alert("Something went wrong, try again!")
             })
 
         },
@@ -434,23 +404,28 @@ var app = new Vue({
             //todas las funciones se encuentran en la documentación
             //https://github.com/gridstack/gridstack.js/tree/develop/doc
 
-            //agregando elementos (widget) desde el javascript
-            //elemento, x, y, width, height
-            // autoPosition - tells to ignore x and y attributes and to place element to the first available position. Having
-            // either one missing will also do that.
-
-            grid.addWidget(this.submarineDIV, this.submarineGSX, this.submarineGSY, this.submarineWidth, this.submarineHeight);
-
-            grid.addWidget(this.carrierDIV, this.carrierGSX, this.carrierGSY, this.carrierWidth, this.carrierHeight);
-
-            grid.addWidget(this.patrolDIV, this.patrolGSX, this.patrolGSY, this.patrolWidth, this.patrolHeight);
-
-            grid.addWidget(this.destroyerDIV, this.destroyerGSX, this.destroyerGSY, this.destroyerWidth, this.destroyerHeight);
-
-            grid.addWidget(this.battleshipDIV, this.battleshipGSX, this.battleshipGSY, this.battleshipWidth, this.battleshipHeight);
-
             // if ship widgets are not locked in place
             if (this.staticGrid == false) {
+
+                //agregando elementos (widget) desde el javascript
+                //elemento, x, y, width, height
+                // autoPosition - tells to ignore x and y attributes and to place element to the first available position. Having
+                // either one missing will also do that.
+                grid.addWidget('<div><div id="submarine" class="grid-stack-item-content submarineHorizontal"></div><div/>',
+                    1, 1, 3, 1);
+
+                grid.addWidget('<div><div id="carrier" class="grid-stack-item-content carrierVertical"></div><div/>',
+                    9, 1, 1, 4);
+
+                grid.addWidget('<div><div id="patrol" class="grid-stack-item-content patrolHorizontal"></div><div/>',
+                    2, 4, 2, 1);
+
+                grid.addWidget('<div><div id="destroyer" class="grid-stack-item-content destroyerVertical"></div><div/>',
+                    6, 4, 1, 3);
+
+                grid.addWidget('<div><div id="battleship" class="grid-stack-item-content battleshipHorizontal"></div><div/>',
+                    2, 8, 5, 1);
+
                 //rotacion de las naves
                 //obteniendo los ships agregados en la grilla
                 const ships = document.querySelectorAll("#submarine,#carrier,#patrol,#destroyer,#battleship");
@@ -487,6 +462,12 @@ var app = new Vue({
                         }
                     }
                 })
+            } else {
+                //agregando elementos (widget) desde JSON "after" placeShips() execution.
+                //elemento, x, y, width, height
+                app.shipsInGrid.forEach(widget => {
+                    grid.addWidget(widget.div, widget.gsX, widget.gsY, widget.width, widget.height)
+                });
             }
         },
     },
