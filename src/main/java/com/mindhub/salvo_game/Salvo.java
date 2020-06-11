@@ -34,6 +34,11 @@ public class Salvo {
         this.gamePlayer = gamePlayer;
     }
 
+    public Salvo(int turn, List<String> salvoLocations) {
+        this.turn = turn;
+        this.salvoLocations = salvoLocations;
+    }
+
     public long getId() {
         return id;
     }

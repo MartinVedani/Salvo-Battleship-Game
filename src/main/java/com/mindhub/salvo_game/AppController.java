@@ -265,6 +265,40 @@ public class AppController {
         return false; // all tests passed successfully
     }
 
+    //POST for gameplayer to add ships to games
+    //POST for gameplayer to add ships to games
+    @PostMapping("/games/players/{gamePlayerId}/salvos")
+    public ResponseEntity<Map<String, Object>> addSalvo(Authentication authentication,
+                                                        @PathVariable long gamePlayerId,
+                                                        @RequestBody List<String> shots){
+        // Using a list<...> of shots and not salvos because the logic per turn will be done in the
+        // back end after receiving a "shots" as strings
+        ResponseEntity<Map<String, Object>> response;
+        if(isGuest(authentication)) {
+            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.UNAUTHORIZED);
+        } else {
+            Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
+            Player player = playerRepository.findPlayerByUsername(authentication.getName());
+            if(!gamePlayer.isPresent()){
+                response = new ResponseEntity<>(makeMap("error", "No such game!"), HttpStatus.NOT_FOUND);
+            } else if (gamePlayer.get().getPlayer().getId() != player.getId()){
+                response = new ResponseEntity<>(makeMap("error", "this is not your game"), HttpStatus.UNAUTHORIZED);
+            } else if (shots.size() != 5){
+                response = new ResponseEntity<>(makeMap("error", "wrong number of shots"), HttpStatus.FORBIDDEN);
+            } else {
+                int turn = gamePlayer.get().getSalvos().size() +1;
+                //each object with any number of salvos as elements is 1 turn
+                Salvo salvo = new Salvo(turn, shots);
+                gamePlayer.get().addSalvo(salvo);
+
+                gamePlayerRepository.save(gamePlayer.get());
+
+                response = new ResponseEntity<>(makeMap("success", "salvo added!"), HttpStatus.CREATED);
+                }
+            }
+        return response;
+    }
+
     // Two private methods we used above for GET and POST responses
     private Map<String, Object> makeMap(String key, Object value) {
         Map<String, Object> map = new HashMap<>();

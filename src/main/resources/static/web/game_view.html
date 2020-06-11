@@ -14,8 +14,6 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack-extra.css" />
     <link rel="stylesheet" href="style/GridStackStyle.css">
 
-    <!-- My STYLES -->
-    <link rel="stylesheet" href="style/main.css">
 </head>
 
 <body>
@@ -86,6 +84,33 @@
                 </button>
 
             </div>
+
+            <div class="col-6">
+                <h3> Your Shots </h3>
+                <div class="table-responsive text-center" id="grid_salvosDIV">
+                    <table class="table-hover table-sm align-middle naval_grid" id="salvos_grid">
+                        <thead>
+                            <tr>
+                                <th v-for="number in numbers"> {{ number }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="letter in letters">
+                                <td class="letter"> {{ letter }} </td>
+                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'"> </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <br>
+
+                <button v-if="staticGrid == true" v-on:click="shootSalvos()" type="button" class=" btn btn-sm btn-danger"> 
+                    FIRE !!!! 
+                </button>
+
+            </div>
+
         </div>
 
         <hr>
@@ -94,7 +119,7 @@
 
             <div class="col-6">
 
-                <h3> Your Ships </h3>
+                <h3> TEST_GRID_Your Ships </h3>
 
                 <div class="table-responsive text-center">
                     <table class="table-hover table-sm align-middle naval_grid" id="ships_grid">
@@ -107,27 +132,6 @@
                             <tr v-for="letter in letters">
                                 <td class="letter"> {{ letter }} </td>
                                 <td v-for="n in 10" v-bind:id="letter + n"> </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-
-            <div class="col-6">
-
-                <h3> Your Shots </h3>
-
-                <div class="table-responsive text-center">
-                    <table class="table-hover table-sm align-middle naval_grid" id="salvos_grid">
-                        <thead>
-                            <tr>
-                                <th v-for="number in numbers"> {{ number }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="letter in letters">
-                                <td class="letter"> {{ letter }} </td>
-                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'"> </td>
                             </tr>
                         </tbody>
                     </table>
@@ -149,9 +153,6 @@
 
     <!-- Vue -->
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-
-    <!-- moments.js -->
-    <script src="scripts/moment-with-locales.min.js"></script>
 
     <!-- GridStack dependencia js -->
     <script src="https://cdn.jsdelivr.net/npm/gridstack@1.1.1/dist/gridstack.all.js"></script>

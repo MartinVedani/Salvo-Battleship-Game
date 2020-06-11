@@ -17,7 +17,7 @@ var app = new Vue({
         opponent: "",
 
         // for widgetDETAIL()
-        shipsInGrid: [],
+        widgetInGrid: [],
         staticGrid: false,
 
         // for printSalvos()
@@ -32,10 +32,15 @@ var app = new Vue({
 
         numbers: ["", 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J"],
-        yDictionary: { 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J' },
-        dictionaryGSY: { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9 },
+
         xDictionary: { 0: '1', 1: '2', 2: '3', 3: '4', 4: '5', 5: '6', 6: '7', 7: '8', 8: '9', 9: '10' },
+        yDictionary: { 0: 'A', 1: 'B', 2: 'C', 3: 'D', 4: 'E', 5: 'F', 6: 'G', 7: 'H', 8: 'I', 9: 'J' },
+
         dictionaryGSX: { '1': 0, '2': 1, '3': 2, '4': 3, '5': 4, '6': 5, '7': 6, '8': 7, '9': 8, '10': 9 },
+        dictionaryGSY: { 'A': 0, 'B': 1, 'C': 2, 'D': 3, 'E': 4, 'F': 5, 'G': 6, 'H': 7, 'I': 8, 'J': 9 },
+
+        xDicSalvos: { 1: '0px', 2: '40px', 3: '80px', 4: '120px', 5: '160px', 6: '200px', 7: '240px', 8: '280px', 9: '320px', 10: '360px' },
+        yDicSalvos: { 'A': '0px', 'B': '40px', 'C': '80px', 'D': '120px', 'E': '160px', 'F': '200px', 'G': '240px', 'H': '280px', 'I': '320px', 'J': '360px' },
 
     },
 
@@ -53,29 +58,21 @@ var app = new Vue({
                 // set player vs opponent info
                 app.getPlayersInfo();
 
-                // if ship placed, get widget details for building the grid
+                // if ship placed, get widget details from JSON for building the grid
                 if (this.games.ships != 0) {
-                    app.widgetsDETAILS()
+                    //app.printSalvos();
+                    app.widgetsDETAILS();
                 } else {
-                    // create Grid Stack with autoplace for ship widgets with default DIVs
-                    app.createGridStack()
+                    // create Grid Stack
+                    app.createGridStack();
                 }
 
-                //print owner's ships
-                app.printShips();
-
-                //print shots
+                //print ALL salvos
                 app.printSalvos();
 
+                //print shots on TEST GRID
+                app.printSalvos_TEST_GRID();
             })
-    },
-
-    filters: {
-        formatDate: function(date) {
-            if (date) {
-                return moment(String(date)).format('MM/DD/YYYY hh:mm:ss a')
-            }
-        }
     },
 
     methods: {
@@ -90,24 +87,18 @@ var app = new Vue({
             })
         },
 
-        printShips() {
+        printSalvos_TEST_GRID() {
+            //build placedShips
             this.games.ships.forEach(ship => {
                 ship.shipLocation.forEach(shipLoc => {
                     this.placedShips.push(shipLoc);
                     document.getElementById(shipLoc).classList.add('td_ship');
                 })
             })
-        },
 
-        printSalvos() {
-            //var salvoLoc;
             this.games.salvos.forEach(salvo => {
                 salvo.salvoLocation.forEach(loc => {
-                    if (salvo.username == this.owner) {
-                        //salvoLoc = loc + '.salvo';
-                        document.getElementById(loc + '.salvo').classList.add('td_salvo_shot');
-                        document.getElementById(loc + '.salvo').innerText = salvo.turn;
-                    } else {
+                    if (salvo.username != this.owner) {
                         if (this.placedShips.includes(loc)) {
                             document.getElementById(loc).classList.add('td_ship_hit');
                             document.getElementById(loc).innerText = 'H'; //Hit
@@ -120,22 +111,89 @@ var app = new Vue({
             })
         },
 
-        gamesHome() {
-            location.href = "/web/games.html";
+        printSalvos() {
+            //build placedShips
+            this.games.ships.forEach(ship => {
+                ship.shipLocation.forEach(shipLoc => {
+                    this.placedShips.push(shipLoc);
+                    document.getElementById(shipLoc).classList.add('td_ship');
+                })
+            })
+
+            this.games.salvos.forEach(salvo => {
+                salvo.salvoLocation.forEach(loc => {
+                    if (salvo.username == this.owner) {
+
+                        //YOUR SHOTS TABLE -> salvoLoc = loc + '.salvo';
+                        document.getElementById(loc + '.salvo').classList.add('td_salvo_shot');
+                        document.getElementById(loc + '.salvo').innerText = salvo.turn;
+
+                    } else {
+
+                        //YOUR SHIPS GRID 
+                        if (this.placedShips.includes(loc)) {
+
+                            // case salvo HIT
+
+                            var varX = loc.slice(1);
+                            var varY = loc[0];
+
+                            var varXX = this.xDicSalvos[varX];
+                            var varYY = this.yDicSalvos[varY];
+
+                            //add div with "+="", do not override everything with just "=".
+                            var content = '<div class="salvo_hit" style="top:' + varYY + '; left:' + varXX + '"><div/>';
+
+                            document.getElementById("grid").innerHTML += content;
+
+
+                        } else {
+                            // case salvo MISS
+
+                            var varX = loc.slice(1);
+                            var varY = loc[0];
+
+                            var varXX = this.xDicSalvos[varX];
+                            var varYY = this.yDicSalvos[varY];
+
+                            //add div with "+="", do not override everything with just "=".
+                            var content = '<div class="salvo_miss" style="top:' + varYY + '; left:' + varXX + '"><div/>';
+
+                            document.getElementById("grid").innerHTML += content;
+
+                        }
+                    }
+                })
+            })
         },
 
-        logout() {
-            $.post("/api/logout").done(function() {
-                console.log("logged out!");
-                location.href = "/web/games.html";
-            }).fail(function() {
-                console.log("error")
-            })
+        shootSalvos(shots) {
+            let url = "/api/games/players/" + gpUrl + "/salvos";
+            let init = {
+                method: 'POST',
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(shots),
+            };
+            fetch(url, init)
+                .then(res => {
+                    if (res.ok) {
+                        return res.json()
+                    } else {
+                        return Promise.reject(res.json())
+                    }
+                })
+                .then(json => {
+                    location.reload()
+                })
+                .catch(error => error)
+                .then(error => console.log(error))
         },
 
         widgetsDETAILS() {
             //lock grid if 5 ships have been placed
-            if (this.games.ships.length == 5) {
+            if (this.games.ships.length > 0) {
                 this.staticGrid = true;
             }
             // patrol, submarine, destroyer, carrier, battleship    
@@ -157,7 +215,7 @@ var app = new Vue({
                             height: H,
                         }
 
-                        this.shipsInGrid.push(widget);
+                        this.widgetInGrid.push(widget);
                         break;
 
                     case 'submarine':
@@ -176,7 +234,7 @@ var app = new Vue({
                             height: H,
                         }
 
-                        this.shipsInGrid.push(widget);
+                        this.widgetInGrid.push(widget);
                         break;
 
                     case 'destroyer':
@@ -195,7 +253,7 @@ var app = new Vue({
                             height: H,
                         }
 
-                        this.shipsInGrid.push(widget);
+                        this.widgetInGrid.push(widget);
                         break;
 
                     case 'carrier':
@@ -214,7 +272,7 @@ var app = new Vue({
                             height: H,
                         }
 
-                        this.shipsInGrid.push(widget);
+                        this.widgetInGrid.push(widget);
                         break;
 
                     case 'battleship':
@@ -233,11 +291,10 @@ var app = new Vue({
                             height: H,
                         }
 
-                        this.shipsInGrid.push(widget);
+                        this.widgetInGrid.push(widget);
                         break;
                 }
             })
-
             app.createGridStack();
         },
 
@@ -358,6 +415,7 @@ var app = new Vue({
 
 
             // submit ships: patrol, submarine, destroyer, carrier, battleship
+            // method 1 with jquery, see shootSalvos() for method 2 with fetch
             $.post({
                 url: "/api/games/players/" + gpUrl + "/ships",
                 data: JSON.stringify([
@@ -464,11 +522,24 @@ var app = new Vue({
                 })
             } else {
                 //agregando elementos (widget) desde JSON "after" placeShips() execution.
-                //elemento, x, y, width, height
-                app.shipsInGrid.forEach(widget => {
+                //div, x, y, width, height
+                app.widgetInGrid.forEach(widget => {
                     grid.addWidget(widget.div, widget.gsX, widget.gsY, widget.width, widget.height)
                 });
             }
+        },
+
+        gamesHome() {
+            location.href = "/web/games.html";
+        },
+
+        logout() {
+            $.post("/api/logout").done(function() {
+                console.log("logged out!");
+                location.href = "/web/games.html";
+            }).fail(function() {
+                console.log("error")
+            })
         },
     },
 });
