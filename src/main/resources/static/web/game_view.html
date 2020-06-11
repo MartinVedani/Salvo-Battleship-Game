@@ -87,7 +87,7 @@
 
             <div class="col-6">
                 <h3> Your Shots </h3>
-                <div class="table-responsive text-center" id="grid_salvosDIV">
+                <div class="table-responsive text-center">
                     <table class="table-hover table-sm align-middle naval_grid" id="salvos_grid">
                         <thead>
                             <tr>
@@ -105,8 +105,8 @@
 
                 <br>
 
-                <button v-if="staticGrid == true" v-on:click="shootSalvos()" type="button" class=" btn btn-sm btn-danger"> 
-                    FIRE !!!! 
+                <button v-if="staticGrid == true" v-on:click="shootSalvos(shots)" type="button" class=" btn btn-sm btn-danger"> 
+                    FIRE AWAY !!!! 
                 </button>
 
             </div>

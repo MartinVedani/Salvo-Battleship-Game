@@ -6,15 +6,13 @@ const urlParams = new URLSearchParams(window.location.search);
 const gpUrl = urlParams.get('gp');
 url = url + gpUrl;
 
-
-//var gpId = paramObj(location.search);
-
 var app = new Vue({
     el: '#app',
     data: {
         games: null,
         owner: "",
         opponent: "",
+        shots: [],
 
         // for widgetDETAIL()
         widgetInGrid: [],
@@ -69,6 +67,9 @@ var app = new Vue({
 
                 //print ALL salvos
                 app.printSalvos();
+
+                //Listen for shots
+                app.listenForShots();
 
                 //print shots on TEST GRID
                 app.printSalvos_TEST_GRID();
@@ -167,7 +168,39 @@ var app = new Vue({
             })
         },
 
+        listenForShots() {
+
+            document.getElementById("salvos_grid").addEventListener('click', function(event) {
+
+                // Don't follow the link
+                event.preventDefault();
+
+                var x = event.target['id'];
+                x = x.substring(0, x.indexOf('.'));
+
+                // Log the clicked element in the console
+                if (app.shots.includes(x)) {
+
+                    console.log('Remove' + x);
+                    app.shots = app.shots.filter(function(ele) { return ele != x; });
+                    document.getElementById(x + '.salvo').classList.remove('td_salvo');
+
+                } else {
+
+                    console.log('Planning shot:' + x);
+                    app.shots.push(x);
+                    document.getElementById(x + '.salvo').classList.add('td_salvo');
+                }
+
+                if (app.shots.length == 5) {
+                    alert("Maximum number of shots taken, it time to FIRE AWAY (or take back planned shot) !!!");
+                }
+
+            });
+        },
+
         shootSalvos(shots) {
+
             let url = "/api/games/players/" + gpUrl + "/salvos";
             let init = {
                 method: 'POST',

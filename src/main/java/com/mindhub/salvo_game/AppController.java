@@ -265,8 +265,7 @@ public class AppController {
         return false; // all tests passed successfully
     }
 
-    //POST for gameplayer to add ships to games
-    //POST for gameplayer to add ships to games
+    //POST for gameplayer to add salvos to games
     @PostMapping("/games/players/{gamePlayerId}/salvos")
     public ResponseEntity<Map<String, Object>> addSalvo(Authentication authentication,
                                                         @PathVariable long gamePlayerId,
