@@ -97,7 +97,7 @@
                         <tbody>
                             <tr v-for="letter in letters">
                                 <td class="letter"> {{ letter }} </td>
-                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'"> </td>
+                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'" v-on:click="listenForShots_WITH_VUE(shots)"> </td>
                             </tr>
                         </tbody>
                     </table>
@@ -105,7 +105,8 @@
 
                 <br>
 
-                <button v-if="staticGrid == true" v-on:click="shootSalvos(shots)" type="button" class=" btn btn-sm btn-danger"> 
+                <button v-if="staticGrid" v-on:click="shootSalvos(shots)" type="button" class=" btn btn-sm btn-danger"> 
+                    <!-- v-if is a boolean, so it assumes "true" if nothing specified in v-if -->
                     FIRE AWAY !!!! 
                 </button>
 

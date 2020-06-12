@@ -68,8 +68,9 @@ var app = new Vue({
                 //print ALL salvos
                 app.printSalvos();
 
-                //Listen for shots
-                app.listenForShots();
+                // Listen for events is a method in Vue already, implemented with 
+                // <td> v-on:click="listenForShots_WITH_VUE(shots)" </td>
+                // app.listenForShots_WITHOUT_VUE();
 
                 //print shots on TEST GRID
                 app.printSalvos_TEST_GRID();
@@ -168,13 +169,14 @@ var app = new Vue({
             })
         },
 
-        listenForShots() {
-
+        /* Listen for events is a method in Vue already, implemented with <td> v-on:click="listenForShots_WITH_VUE(shots)" </td>
+        listenForShots_WITHOUT_VUE() {
             document.getElementById("salvos_grid").addEventListener('click', function(event) {
 
                 // Don't follow the link
                 event.preventDefault();
 
+                //remove .salvo from id until the TEST_GRID is no longe needed
                 var x = event.target['id'];
                 x = x.substring(0, x.indexOf('.'));
 
@@ -197,6 +199,31 @@ var app = new Vue({
                 }
 
             });
+        }, */
+
+        listenForShots_WITH_VUE(x) {
+
+            //remove .salvo from id until the TEST_GRID is no longe needed
+            var x = event.target['id'];
+            x = x.substring(0, x.indexOf('.'));
+
+            // Log the clicked element in the console
+            if (app.shots.includes(x)) {
+
+                console.log('Remove' + x);
+                app.shots = app.shots.filter(function(ele) { return ele != x; });
+                document.getElementById(x + '.salvo').classList.remove('td_salvo');
+
+            } else {
+
+                console.log('Planning shot:' + x);
+                app.shots.push(x);
+                document.getElementById(x + '.salvo').classList.add('td_salvo');
+            }
+
+            if (app.shots.length == 5) {
+                alert("Maximum number of shots taken, it time to FIRE AWAY (or take back planned shot) !!!");
+            }
         },
 
         shootSalvos(shots) {
