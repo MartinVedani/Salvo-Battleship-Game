@@ -98,8 +98,9 @@ td {
 }
 
 th {
-    background-color: blue;
+    background-color: darkblue;
     color: white;
+    border: 1px solid white;
 }
 
 #salvos_grid,
@@ -119,30 +120,24 @@ th {
 }
 
 .letter {
+    background-color: darkblue;
+    color: white;
+    border: 1px solid white;
+}
+
+.td_salvo_shot {
     background-color: blue;
     color: white;
 }
 
-.td_salvo_shot {
-    background-color: orange;
-    color: white;
-}
-
-.td_ship {
-    background-color: var(--ship-color);
-    color: white;
-}
-
-.td_ship_hit {
+.td_salvo_shot_hit {
     background-color: red;
     color: white;
-    background-image: url(salvo_hit.jpg);
 }
 
-.td_ship_miss {
-    background-color: lime;
+.td_salvo_shot_sunk {
+    background-color: black;
     color: white;
-    background-image: url(salvo_miss.jpg);
 }
 
 .salvo_hit {

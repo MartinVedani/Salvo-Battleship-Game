@@ -14,6 +14,10 @@ var app = new Vue({
         opponent: "",
         shots: [],
 
+        // for history table
+        round: 0,
+        history: [],
+
         // for widgetDETAIL()
         widgetInGrid: [],
         staticGrid: false,
@@ -44,15 +48,15 @@ var app = new Vue({
 
     created() {
         fetch(url, {
-                method: 'GET' //, // or 'PUT'
-                    // headers: {
-                    // 'X-API-Key': '#####',
-                    //}
-            }).then(res => res.json())
+            method: 'GET' //, // or 'PUT'
+            // headers: {
+            // 'X-API-Key': '#####',
+            //}
+        }).then(res => res.json())
             .catch(error => console.error('Error:', error))
             .then(json => {
                 this.games = json;
-
+                this.round = this.games.hits.length;
                 // set player vs opponent info
                 app.getPlayersInfo();
 
@@ -68,16 +72,48 @@ var app = new Vue({
                 //print ALL salvos
                 app.printSalvos();
 
-                // Listen for events is a method in Vue already, implemented with 
-                // <td> v-on:click="listenForShots_WITH_VUE(shots)" </td>
-                // app.listenForShots_WITHOUT_VUE();
-
-                //print shots on TEST GRID
-                app.printSalvos_TEST_GRID();
+                // sort history
+                app.sortHistory();
             })
     },
 
     methods: {
+
+        sortHistory() {
+
+            // Ordenar creciente por TURNOS
+            function compareTurn(a, b) {
+                // a BEFORE b
+                if (a.turn < b.turn) {
+                    return -1;
+                    // a AFTER b
+                } else if (a.turn > b.turn) {
+                    return 1;
+                    // the same
+                } else {
+                    return 0;
+                }
+            };
+
+            this.history = {
+                hits: this.games.hits.sort(compareTurn),
+                sunken: this.games.sunken.sort(compareTurn),
+                sunkenTypes: [],
+                enemyHits: this.games.enemyHits.sort(compareTurn),
+                enemySunken: this.games.enemySunken.sort(compareTurn),
+                enemySunkenTypes: [],
+            };
+
+            // x = app.history.sunken[app.history.sunken.length - 1].sunken[0].type = "patrol"
+            this.history.sunken[this.history.sunken.length - 1].sunken.forEach(sunk => {
+                this.history.sunkenTypes = this.history.sunkenTypes + sunk.type + " ";
+            })
+
+            this.history.enemySunken[this.history.enemySunken.length - 1].sunken.forEach(sunk => {
+                this.history.enemySunkenTypes = this.history.enemySunkenTypes + sunk.type + " ";
+            })
+
+        },
 
         getPlayersInfo() {
             this.games.gamePlayers.forEach(gp => {
@@ -89,36 +125,11 @@ var app = new Vue({
             })
         },
 
-        printSalvos_TEST_GRID() {
-            //build placedShips
-            this.games.ships.forEach(ship => {
-                ship.shipLocation.forEach(shipLoc => {
-                    this.placedShips.push(shipLoc);
-                    document.getElementById(shipLoc).classList.add('td_ship');
-                })
-            })
-
-            this.games.salvos.forEach(salvo => {
-                salvo.salvoLocation.forEach(loc => {
-                    if (salvo.username != this.owner) {
-                        if (this.placedShips.includes(loc)) {
-                            document.getElementById(loc).classList.add('td_ship_hit');
-                            document.getElementById(loc).innerText = 'H'; //Hit
-                        } else {
-                            document.getElementById(loc).classList.add('td_ship_miss');
-                            document.getElementById(loc).innerText = 'M'; //Miss
-                        }
-                    }
-                })
-            })
-        },
-
         printSalvos() {
             //build placedShips
             this.games.ships.forEach(ship => {
                 ship.shipLocation.forEach(shipLoc => {
                     this.placedShips.push(shipLoc);
-                    document.getElementById(shipLoc).classList.add('td_ship');
                 })
             })
 
@@ -126,13 +137,30 @@ var app = new Vue({
                 salvo.salvoLocation.forEach(loc => {
                     if (salvo.username == this.owner) {
 
-                        //YOUR SHOTS TABLE -> salvoLoc = loc + '.salvo';
+                        //Owner SHOTS -> salvoLoc = loc + '.salvo';
                         document.getElementById(loc + '.salvo').classList.add('td_salvo_shot');
                         document.getElementById(loc + '.salvo').innerText = salvo.turn;
 
+                        // Owner HITS
+                        this.games.hits.forEach(hit => {
+                            if (hit.hits.includes(loc)) {
+                                document.getElementById(loc + '.salvo').classList.add('td_salvo_shot_hit');
+                            }
+                        });
+
+                        // Owner SUNK
+                        this.games.sunken.forEach(sunk => {
+                            sunk.sunken.forEach(sunkenShip => {
+                                if (sunkenShip.shipLocation.includes(loc)) {
+                                    document.getElementById(loc + '.salvo').classList.add('td_salvo_shot_sunk');
+                                }
+                            })
+
+                        });
+
                     } else {
 
-                        //YOUR SHIPS GRID 
+                        //OWNER SHIPS GRID 
                         if (this.placedShips.includes(loc)) {
 
                             // case salvo HIT
@@ -169,7 +197,10 @@ var app = new Vue({
             })
         },
 
-        /* Listen for events is a method in Vue already, implemented with <td> v-on:click="listenForShots_WITH_VUE(shots)" </td>
+        /* Listen for events is a method in Vue already, implemented with:
+
+         <td> v-on:click="listenForShotsWithVue()" </td>
+
         listenForShots_WITHOUT_VUE() {
             document.getElementById("salvos_grid").addEventListener('click', function(event) {
 
@@ -201,17 +232,18 @@ var app = new Vue({
             });
         }, */
 
-        listenForShots_WITH_VUE(x) {
+        listenForShotsWithVue() {
 
-            //remove .salvo from id until the TEST_GRID is no longe needed
             var x = event.target['id'];
+
+            //remove .salvo from id
             x = x.substring(0, x.indexOf('.'));
 
             // Log the clicked element in the console
             if (app.shots.includes(x)) {
 
                 console.log('Remove' + x);
-                app.shots = app.shots.filter(function(ele) { return ele != x; });
+                app.shots = app.shots.filter(function (ele) { return ele != x; });
                 document.getElementById(x + '.salvo').classList.remove('td_salvo');
 
             } else {
@@ -263,7 +295,7 @@ var app = new Vue({
                         //PATROL: 2x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
-                        var content = '<div><div id="patrol" class="grid-stack-item-content patrol' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var content = `<div><div id="patrol" class="grid-stack-item-content ${varY == ship.shipLocation[1][0] ? 'patrolHorizontal' : 'patrolVertical'} "></div><div/>`;
                         var W = varY == ship.shipLocation[1][0] ? 2 : 1;
                         var H = varY == ship.shipLocation[1][0] ? 1 : 2;
 
@@ -282,7 +314,7 @@ var app = new Vue({
                         //SUBMARINE: 3x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
-                        var content = '<div><div id="submarine" class="grid-stack-item-content submarine' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var content = `<div><div id="submarine" class="grid-stack-item-content ${varY == ship.shipLocation[1][0] ? 'submarineHorizontal' : 'submarineVertical'} "></div><div/>`;
                         var W = varY == ship.shipLocation[1][0] ? 3 : 1;
                         var H = varY == ship.shipLocation[1][0] ? 1 : 3;
 
@@ -301,7 +333,7 @@ var app = new Vue({
                         //destroyer: 3x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
-                        var content = '<div><div id="destroyer" class="grid-stack-item-content destroyer' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var content = `<div><div id="destroyer" class="grid-stack-item-content ${varY == ship.shipLocation[1][0] ? 'destroyerHorizontal' : 'destroyerVertical'} "></div><div/>`;
                         var W = varY == ship.shipLocation[1][0] ? 3 : 1;
                         var H = varY == ship.shipLocation[1][0] ? 1 : 3;
 
@@ -320,7 +352,7 @@ var app = new Vue({
                         //carrier: 4x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
-                        var content = '<div><div id="carrier" class="grid-stack-item-content carrier' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var content = `<div><div id="carrier" class="grid-stack-item-content ${varY == ship.shipLocation[1][0] ? 'carrierHorizontal' : 'carrierVertical'} "></div><div/>`;
                         var W = varY == ship.shipLocation[1][0] ? 4 : 1;
                         var H = varY == ship.shipLocation[1][0] ? 1 : 4;
 
@@ -339,7 +371,7 @@ var app = new Vue({
                         //battleship: 5x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
-                        var content = '<div><div id="battleship" class="grid-stack-item-content battleship' + (varY == ship.shipLocation[1][0] ? 'Horizontal' : 'Vertical') + '"></div><div/>';
+                        var content = `<div><div id="battleship" class="grid-stack-item-content ${varY == ship.shipLocation[1][0] ? 'battleshipHorizontal' : 'battleshipVertical'} "></div><div/>`;
                         var W = varY == ship.shipLocation[1][0] ? 5 : 1;
                         var H = varY == ship.shipLocation[1][0] ? 1 : 5;
 
@@ -487,10 +519,10 @@ var app = new Vue({
                 ]),
                 dataType: "text",
                 contentType: "application/json"
-            }).done(function() {
+            }).done(function () {
                 console.log("Success, commencing battle!!! ... ");
                 location.reload();
-            }).fail(function() {
+            }).fail(function () {
                 console.log("error")
                 alert("Something went wrong, try again!")
             })
@@ -502,7 +534,7 @@ var app = new Vue({
                 //grilla de 10 x 10
                 column: 10,
                 row: 10,
-                //separacion entre elementos (les llaman widgets)
+                //separación entre elementos (les llaman widgets)
                 verticalMargin: 0,
                 //altura de las celdas
                 disableOneColumnMode: true,
@@ -510,13 +542,13 @@ var app = new Vue({
                 cellHeight: 40,
                 //necesario
                 float: true,
-                //desabilitando el resize de los widgets
+                //deshabilitando el resize de los widgets
                 disableResize: true,
                 //false permite mover los widgets, true impide
                 staticGrid: this.staticGrid
             }
 
-            //iniciando la grilla en modo libre statidGridFalse
+            //iniciando la grilla en modo libre staticGrid = False
             const grid = GridStack.init(options, '#grid');
 
             //todas las funciones se encuentran en la documentación
@@ -544,12 +576,12 @@ var app = new Vue({
                 grid.addWidget('<div><div id="battleship" class="grid-stack-item-content battleshipHorizontal"></div><div/>',
                     2, 8, 5, 1);
 
-                //rotacion de las naves
+                //rotación de las naves
                 //obteniendo los ships agregados en la grilla
                 const ships = document.querySelectorAll("#submarine,#carrier,#patrol,#destroyer,#battleship");
                 ships.forEach(ship => {
                     //asignando el evento de click a cada nave
-                    ship.parentElement.onclick = function(event) {
+                    ship.parentElement.onclick = function (event) {
                         //obteniendo el ship (widget) al que se le hace click
                         let itemContent = event.target;
                         //obteniendo valores del widget
@@ -560,9 +592,9 @@ var app = new Vue({
 
                         //si esta horizontal se rota a vertical sino a horizontal
                         if (itemContent.classList.contains(itemContent.id + 'Horizontal')) {
-                            //veiricando que existe espacio disponible para la rotacion
+                            //verificando que existe espacio disponible para la rotación
                             if (grid.isAreaEmpty(itemX, itemY + 1, itemHeight, itemWidth - 1) && (itemY + (itemWidth - 1) <= 9)) {
-                                //la rotacion del widget es simplemente intercambiar el alto y ancho del widget, ademas se cambia la clase
+                                //la rotación del widget es simplemente intercambiar el alto y ancho del widget, ademas se cambia la clase
                                 grid.resize(itemContent.parentElement, itemHeight, itemWidth);
                                 itemContent.classList.remove(itemContent.id + 'Horizontal');
                                 itemContent.classList.add(itemContent.id + 'Vertical');
@@ -594,10 +626,10 @@ var app = new Vue({
         },
 
         logout() {
-            $.post("/api/logout").done(function() {
+            $.post("/api/logout").done(function () {
                 console.log("logged out!");
                 location.href = "/web/games.html";
-            }).fail(function() {
+            }).fail(function () {
                 console.log("error")
             })
         },
@@ -606,7 +638,7 @@ var app = new Vue({
 
 // AJAX Feed for help with developing
 
-$(function() {
+$(function () {
 
     // display text in the output area
     function showOutput(text) {
@@ -617,10 +649,10 @@ $(function() {
 
     function loadData() {
         $.get(url)
-            .done(function(data) {
+            .done(function (data) {
                 showOutput(JSON.stringify(data, null, 2));
             })
-            .fail(function(jqXHR, textStatus) {
+            .fail(function (jqXHR, textStatus) {
                 showOutput("Failed: " + textStatus);
             });
     }

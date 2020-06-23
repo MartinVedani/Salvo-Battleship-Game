@@ -4,10 +4,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
@@ -116,6 +113,14 @@ public class GamePlayer {
         return this.getPlayer().getScores().stream().filter(score -> score.getGame().getId() == this.getGame().getId()).findFirst().orElse(null);
     }
 
+    // get opponent for Salvos, Ships and Sunken Ships in Salvo::salvoDTO
+    public GamePlayer getOpponent(){
+        return this.getGame().getGamePlayers()
+                .stream().filter(gp -> gp.getId() != this.getId())
+                .findFirst()
+                .orElse(null);
+    }
+
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -143,6 +148,24 @@ public class GamePlayer {
                 this.game.getGamePlayers().stream().map(GamePlayer::gamePlayerDTO).collect(Collectors.toList()));
         dto.put("ships", this.ships.stream().map(Ship::shipsDTO).collect(Collectors.toList()));
         dto.put("salvos", game.getGamePlayers().stream().flatMap(gamePlayer -> gamePlayer.getSalvos().stream().map(Salvo::salvoDTO)).collect(Collectors.toList()));
+
+        // damage done to the enemy
+        dto.put("hits", this.getSalvos().stream().map(Salvo::salvoHitDTO));
+        dto.put("sunken", this.getSalvos().stream().map(Salvo::salvoSunkenDTO));
+
+        // damage done by the enemy, to the gamePlayer
+        GamePlayer opponent = this.getOpponent();
+
+        if(opponent != null) {
+            dto.put("enemyHits", opponent.getSalvos().stream().map(Salvo::salvoHitDTO));
+            dto.put("enemySunken", opponent.getSalvos().stream().map(Salvo::salvoSunkenDTO));
+        } else {
+            // array vacío es mejor para trabajar con forEach en el front end
+            // sin necesitar el "if == null"
+            dto.put("enemyHits", new ArrayList<>());
+            dto.put("enemySunken", new ArrayList<>());
+        }
+
         return dto;
     }
 }

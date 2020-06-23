@@ -21,14 +21,14 @@
     <div class="container-fluid" id="app">
         <hr>
         <div class="row justify-content-center align-self-center">
-            <div class="col">
+            <div class="col-6">
                 <div class="table-responsive">
                     <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
                         <thead>
                             <tr>
-                                <th rowspan="2"> Game Id </th>
-                                <th rowspan="2"> Player (you) </th>
-                                <th rowspan="2"> Your Opponent </th>
+                                <th> Game Id </th>
+                                <th> Player (you) </th>
+                                <th> Your Opponent </th>
                             </tr>
                         </thead>
                         <tbody id="table-data-body">
@@ -40,16 +40,67 @@
                         </tbody>
                     </table>
                     <br>
-                    <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button"> 
-                        Log out 
+                    <button v-on:click="logout()" class=" btn btn-sm btn-outline-dark" type="button">
+                        Log out
                     </button>
 
-                    <button v-on:click="gamesHome()" class=" btn btn-sm btn-outline-primary"> 
-                        Return to Games Home Page 
+                    <button v-on:click="gamesHome()" class=" btn btn-sm btn-outline-primary">
+                        Return to Games Home Page
                     </button>
 
                 </div>
             </div>
+
+            <div class="col-6">
+                <div class="table-responsive">
+                    <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
+                        <thead>
+                            <tr>
+                                <th rowspan="2"> Turn </th>
+                                <th colspan="3"> Hits on you </th>
+                                <th colspan="3"> Hits on Opponent </th>
+                            </tr>
+                            <tr>
+                                <th> Hits</th>
+                                <th> Sunken so far</th>
+                                <th> Still floating </th>
+                                <th> Hits</th>
+                                <th> Sunken so far</th>
+                                <th> Still floating </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-if="round != 0" v-for="n in round">
+                                <td>{{ n }}</td>
+                                <td> {{ (history.enemyHits[n-1] != null) ? history.enemyHits[n-1].hits.length : 'no shots' }}
+                                </td>
+                                <td>{{ (history.enemySunken[n-1] != null) ? history.enemySunken[n-1].sunken.length : 'no shots' }}
+                                </td>
+                                <td>
+                                    {{ (history.enemySunken[n-1] != null && 5 - history.enemySunken[n-1].sunken.length > 0) ? 5 - history.enemySunken[n-1].sunken.length : '0' }}
+                                </td>
+                                <td>{{ history.hits[n-1].hits.length }}</td>
+                                <td>{{ (history.sunken[n-1].sunken.length > 0) ? history.sunken[n-1].sunken.length : 0 }}
+                                </td>
+                                <td>
+                                    {{ (history.sunken[n-1] != null && 5 - history.sunken[n-1].sunken.length > 0) ? 5 - history.sunken[n-1].sunken.length : '0' }}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td> Sunken </td>
+                                <td colspan="3">
+                                    {{ history.enemySunkenTypes}}
+                                </td>
+                                <td colspan="3">
+                                    {{ history.sunkenTypes }}
+                                </td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
         </div>
 
         <hr>
@@ -60,12 +111,12 @@
 
                 <div>
                     <template v-if="staticGrid == false">
-                    <h2>Place your Ships</h2>
-                    <p>Drag and drop, click to rotate 90º</p>
+                        <h2>Place your Ships</h2>
+                        <p>Drag and drop, click to rotate 90º</p>
                     </template>
 
                     <template v-else>
-                    <h2>Your Ships</h2>
+                        <h2>Your Ships</h2>
                     </template>
                 </div>
 
@@ -79,8 +130,9 @@
 
                 <br>
 
-                <button v-if="staticGrid == false" v-on:click="placeShips()" type="button" class=" btn btn-sm btn-danger"> 
-                    Lock your ships in place and begin battle 
+                <button v-if="staticGrid == false" v-on:click="placeShips()" type="button"
+                    class=" btn btn-sm btn-danger">
+                    Lock your ships in place and begin battle
                 </button>
 
             </div>
@@ -97,7 +149,8 @@
                         <tbody>
                             <tr v-for="letter in letters">
                                 <td class="letter"> {{ letter }} </td>
-                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'" v-on:click="listenForShots_WITH_VUE(shots)"> </td>
+                                <td v-for="n in 10" v-bind:id="letter + n + '.salvo'"
+                                    v-on:click="listenForShotsWithVue()"> </td>
                             </tr>
                         </tbody>
                     </table>
@@ -105,9 +158,9 @@
 
                 <br>
 
-                <button v-if="staticGrid" v-on:click="shootSalvos(shots)" type="button" class=" btn btn-sm btn-danger"> 
+                <button v-if="staticGrid" v-on:click="shootSalvos(shots)" type="button" class=" btn btn-sm btn-danger">
                     <!-- v-if is a boolean, so it assumes "true" if nothing specified in v-if -->
-                    FIRE AWAY !!!! 
+                    FIRE AWAY !!!!
                 </button>
 
             </div>
@@ -116,29 +169,6 @@
 
         <hr>
 
-        <div class="row justify-content-center align-self-center">
-
-            <div class="col-6">
-
-                <h3> TEST_GRID_Your Ships </h3>
-
-                <div class="table-responsive text-center">
-                    <table class="table-hover table-sm align-middle naval_grid" id="ships_grid">
-                        <thead>
-                            <tr>
-                                <th v-for="number in numbers"> {{ number }}</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr v-for="letter in letters">
-                                <td class="letter"> {{ letter }} </td>
-                                <td v-for="n in 10" v-bind:id="letter + n"> </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
     </div>
 
     <pre id="output"></pre>
