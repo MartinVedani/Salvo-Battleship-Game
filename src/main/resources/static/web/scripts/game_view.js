@@ -57,6 +57,7 @@ var app = new Vue({
             .then(json => {
                 this.games = json;
                 this.round = this.games.hits.length;
+
                 // set player vs opponent info
                 app.getPlayersInfo();
 
@@ -102,6 +103,7 @@ var app = new Vue({
                 enemyHits: this.games.enemyHits.sort(compareTurn),
                 enemySunken: this.games.enemySunken.sort(compareTurn),
                 enemySunkenTypes: [],
+                salvosFired: [],
             };
 
             // x = app.history.sunken[app.history.sunken.length - 1].sunken[0].type = "patrol"
@@ -113,6 +115,11 @@ var app = new Vue({
                 this.history.enemySunkenTypes = this.history.enemySunkenTypes + sunk.type + " ";
             })
 
+            this.games.salvos.forEach(salvo => {
+                if (salvo.username == this.owner) {
+                    this.history.salvosFired += salvo.salvoLocation + ",";
+                }
+            })
         },
 
         getPlayersInfo() {
@@ -239,6 +246,9 @@ var app = new Vue({
             //remove .salvo from id
             x = x.substring(0, x.indexOf('.'));
 
+            // Ignore cells already fired on
+            if (this.history.salvosFired.includes(x)) return;
+
             // Log the clicked element in the console
             if (app.shots.includes(x)) {
 
@@ -253,8 +263,11 @@ var app = new Vue({
                 document.getElementById(x + '.salvo').classList.add('td_salvo');
             }
 
-            if (app.shots.length == 5) {
-                alert("Maximum number of shots taken, it time to FIRE AWAY (or take back planned shot) !!!");
+            if (app.shots.length > 5) {
+                console.log('Too many shots, removing:' + x);
+                alert("Maximum number of shots taken, time to FIRE AWAY (or take back planned shot) !!!");
+                app.shots = app.shots.filter(function (ele) { return ele != x; });
+                document.getElementById(x + '.salvo').classList.remove('td_salvo');
             }
         },
 
