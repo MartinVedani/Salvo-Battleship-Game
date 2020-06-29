@@ -17,14 +17,15 @@ public class Salvo {
     private int turn;
 
     @ElementCollection
-    @Column(name="salvoLocations")
+    @Column(name = "salvoLocations")
     private List<String> salvoLocations = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "gamePlayer_id")
     private GamePlayer gamePlayer;
 
-    public Salvo(){}
+    public Salvo() {
+    }
 
     public Salvo(int turn, List<String> salvoLocations, GamePlayer gamePlayer) {
         this.turn = turn;
@@ -69,8 +70,8 @@ public class Salvo {
         this.gamePlayer = gamePlayer;
     }
 
-    //getHits for myShots
-    private List<String> getHits(){
+    // getHits for myShots
+    private List<String> getHits() {
 
         List<String> myShots = this.getSalvoLocations();
 
@@ -80,38 +81,29 @@ public class Salvo {
 
         opponentShips.forEach(ship -> allEnemyLocs.addAll(ship.getShipLocations()));
 
-        return myShots
-                .stream()
-                    .filter(shot -> allEnemyLocs
-                        .stream()
-                            .anyMatch(loc -> loc.equals(shot)))
-                                .collect(Collectors.toList());
+        return myShots.stream().filter(shot -> allEnemyLocs.stream().anyMatch(loc -> loc.equals(shot)))
+                .collect(Collectors.toList());
     }
 
-    //getSunkenShips from opponentShips
-    private List<Ship> getSunkenShips(){
+    // getSunkenShips from opponentShips
+    public List<Ship> getSunkenShips() {
 
         List<String> allShots = new ArrayList<>();
 
-        Set<Salvo> mySalvos = this.getGamePlayer()
-                .getSalvos()
-                    .stream()
-                    .filter(salvo -> salvo.getTurn() <= this.getTurn())
-                    .collect(Collectors.toSet());
+        Set<Salvo> mySalvos = this.getGamePlayer().getSalvos().stream()
+                .filter(salvo -> salvo.getTurn() <= this.getTurn()).collect(Collectors.toSet());
 
         Set<Ship> opponentShips = this.getGamePlayer().getOpponent().getShips();
 
         mySalvos.forEach(salvo -> allShots.addAll(salvo.getSalvoLocations()));
 
-        return opponentShips
-                .stream()
-                    .filter(ship -> allShots.containsAll(ship.getShipLocations()))
-                        .collect(Collectors.toList());
+        return opponentShips.stream().filter(ship -> allShots.containsAll(ship.getShipLocations()))
+                .collect(Collectors.toList());
     }
 
     // DTO para Salvos en General
-    public Map<String, Object> salvoDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
+    public Map<String, Object> salvoDTO() {
+        Map<String, Object> dto = new LinkedHashMap<>(); // Linked envia a Map de forma ordenada.
         dto.put("turn", this.turn);
         dto.put("username", this.gamePlayer.getPlayer().getUsername());
         dto.put("salvoLocation", this.salvoLocations);
@@ -120,13 +112,15 @@ public class Salvo {
     }
 
     // DTO para Salvo HITS
-    public Map<String, Object> salvoHitDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
+    public Map<String, Object> salvoHitDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>(); // Linked envia a Map de forma ordenada.
+
         dto.put("turn", this.turn);
 
         GamePlayer opponent = this.getGamePlayer().getOpponent();
 
-        if(opponent != null){
+        if (opponent != null) {
 
             dto.put("hits", this.getHits());
 
@@ -142,16 +136,17 @@ public class Salvo {
     }
 
     // DTO para Salvos SUNKEN
-    public Map<String, Object> salvoSunkenDTO(){
-        Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
+    public Map<String, Object> salvoSunkenDTO() {
+
+        Map<String, Object> dto = new LinkedHashMap<>(); // Linked envia a Map de forma ordenada.
+
         dto.put("turn", this.turn);
 
         GamePlayer opponent = this.getGamePlayer().getOpponent();
 
-        if(opponent != null){
+        if (opponent != null) {
 
             dto.put("sunken", this.getSunkenShips().stream().map(Ship::shipsDTO));
-
 
         } else {
 
@@ -163,4 +158,5 @@ public class Salvo {
 
         return dto;
     }
+
 }

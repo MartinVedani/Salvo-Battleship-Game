@@ -66,7 +66,7 @@ public class Ship {
         this.gamePlayer = gamePlayer;
     }
 
-    //DTO (data transfer object) para administrar la info de Game
+    //DTO (data transfer object) para administrar la info de Ship
     public Map<String, Object> shipsDTO(){
         Map<String, Object> dto = new LinkedHashMap<>(); //Linked envia a Map de forma ordenada.
         dto.put("type", this.type);

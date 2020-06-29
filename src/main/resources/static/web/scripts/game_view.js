@@ -265,13 +265,17 @@ var app = new Vue({
 
             if (app.shots.length > 5) {
                 console.log('Too many shots, removing:' + x);
-                alert("Maximum number of shots taken, time to FIRE AWAY (or take back planned shot) !!!");
+                alert("Maximum number of shots allowed exceded, removing that last one, time to FIRE AWAY (or take back planned shot) !!!");
                 app.shots = app.shots.filter(function (ele) { return ele != x; });
                 document.getElementById(x + '.salvo').classList.remove('td_salvo');
             }
         },
 
         shootSalvos(shots) {
+            if (shots.length < 5) {
+                alert('You are missing shots, you can take up to 5 on this turn');
+                return;
+            }
 
             let url = "/api/games/players/" + gpUrl + "/salvos";
             let init = {
@@ -304,7 +308,7 @@ var app = new Vue({
             // patrol, submarine, destroyer, carrier, battleship    
             this.games.ships.forEach(ship => {
                 switch (ship.type) {
-                    case 'patrol':
+                    case 'PATROL':
                         //PATROL: 2x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
@@ -323,7 +327,7 @@ var app = new Vue({
                         this.widgetInGrid.push(widget);
                         break;
 
-                    case 'submarine':
+                    case 'SUBMARINE':
                         //SUBMARINE: 3x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
@@ -342,7 +346,7 @@ var app = new Vue({
                         this.widgetInGrid.push(widget);
                         break;
 
-                    case 'destroyer':
+                    case 'DESTROYER':
                         //destroyer: 3x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
@@ -361,7 +365,7 @@ var app = new Vue({
                         this.widgetInGrid.push(widget);
                         break;
 
-                    case 'carrier':
+                    case 'CARRIER':
                         //carrier: 4x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
@@ -380,7 +384,7 @@ var app = new Vue({
                         this.widgetInGrid.push(widget);
                         break;
 
-                    case 'battleship':
+                    case 'BATTLESHIP':
                         //battleship: 5x1
                         var varX = ship.shipLocation[0].slice(1);
                         var varY = ship.shipLocation[0][0];
@@ -524,11 +528,11 @@ var app = new Vue({
             $.post({
                 url: "/api/games/players/" + gpUrl + "/ships",
                 data: JSON.stringify([
-                    { "type": "patrol", "shipLocations": this.patrol },
-                    { "type": "submarine", "shipLocations": this.submarine },
-                    { "type": "destroyer", "shipLocations": this.destroyer },
-                    { "type": "carrier", "shipLocations": this.carrier },
-                    { "type": "battleship", "shipLocations": this.battleship },
+                    { "type": "PATROL", "shipLocations": this.patrol },
+                    { "type": "SUBMARINE", "shipLocations": this.submarine },
+                    { "type": "DESTROYER", "shipLocations": this.destroyer },
+                    { "type": "CARRIER", "shipLocations": this.carrier },
+                    { "type": "BATTLESHIP", "shipLocations": this.battleship },
                 ]),
                 dataType: "text",
                 contentType: "application/json"

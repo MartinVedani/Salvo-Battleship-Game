@@ -121,6 +121,65 @@ public class GamePlayer {
                 .orElse(null);
     }
 
+    // GET STATE FOR THE GAME
+    public GameState getGameState(){
+
+        // iniciar respuesta
+        GameState response = null;
+
+        // iniciar jugadores
+        Long gpGpId = this.getId();
+        GamePlayer opponent = this.getOpponent();
+        Long enemyGpId = (opponent == null) ? null : opponent.getId();
+
+        //iniciar naves
+        Set<Ship> gpShips = this.getShips();
+        Set<Ship> enemyShips = (opponent == null) ? null : opponent.getShips();
+
+        //iniciar turnos
+        Integer gpTurn = (this.getSalvos() == null) ? 0 : this.getSalvos().size();
+        Integer enemyTurn = (opponent == null) ? 0 : (opponent.getSalvos() == null) ? 0 : opponent.getSalvos().size();
+
+        // iniciar naves hundidas
+        Integer gpSunkenShips = (gpTurn == 0) ? 0 : this.getSalvos().stream().filter(salvo -> salvo.getTurn() == gpTurn).findFirst().get().getSunkenShips().size();
+        Integer enemySunkenShips = (enemyTurn == 0) ? 0 : opponent.getSalvos().stream().filter(salvo -> salvo.getTurn() == enemyTurn).findFirst().get().getSunkenShips().size();
+
+        // Start by placing ships
+        if (gpShips.size() != 5 ){
+            response = GameState.WAITING_FOR_YOUR_SHIPS;
+
+        //Wait on opponent
+        }  else if (opponent == null) {
+            response = GameState.WAITING_FOR_OPPONENT;
+
+        // wait on Enemy ships
+        } else if (enemyShips.size() != 5){
+            response = GameState.WAITING_FOR_ENEMY_SHIPS;
+
+        //play the game
+        } else if (gpTurn < enemyTurn) {
+            response = GameState.WAITING_FOR_YOUR_SHOTS;
+        } else if (gpTurn > enemyTurn) {
+            response = GameState.WAITING_FOR_ENEMY_SHOTS;
+
+        // GAME_OVER_Score
+        } else if (gpTurn == enemyTurn && (gpSunkenShips == 5 && enemySunkenShips == 5)){
+            response = GameState.GAME_OVER_TIE;
+        } else if (gpTurn == enemyTurn && (gpSunkenShips == 5 && enemySunkenShips < 5)){
+            response = GameState.GAME_OVER_WON;
+        } else if (gpTurn == enemyTurn && (gpSunkenShips < 5 && enemySunkenShips == 5)){
+            response = GameState.GAME_OVER_LOSS;
+
+        //Keep playing the game if no one has sunken 5 ships yet
+        } else if (gpTurn == enemyTurn && gpGpId < enemyGpId) {
+            response = GameState.WAITING_FOR_YOUR_SHOTS;
+
+        } else if (gpTurn == enemyTurn && gpGpId > enemyGpId) {
+            response = GameState.WAITING_FOR_ENEMY_SHOTS;
+        }
+            return response;
+        }
+
     // DTO (data transfer object) para administrar la info de GamePlayer
     public Map<String, Object> gamePlayerDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
@@ -141,6 +200,7 @@ public class GamePlayer {
         // pedirse permiso a sí misma para ingresar sus propias propiedades.
     }
 
+    // GameView DTO con hits and sunken para owner y opponent
     public Map<String, Object> gamePlayerViewDTO(){
         Map<String, Object> dto = new LinkedHashMap<>();
         dto.put("gameId", this.game.getId());
@@ -165,6 +225,8 @@ public class GamePlayer {
             dto.put("enemyHits", new ArrayList<>());
             dto.put("enemySunken", new ArrayList<>());
         }
+
+        dto.put("gameState", this.getGameState());
 
         return dto;
     }
