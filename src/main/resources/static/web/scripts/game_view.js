@@ -14,6 +14,10 @@ var app = new Vue({
         opponent: "",
         shots: [],
 
+        // for gameState
+        gameState: '',
+        gameStateBanner: '',
+
         // for history table
         round: 0,
         history: [],
@@ -57,6 +61,7 @@ var app = new Vue({
             .then(json => {
                 this.games = json;
                 this.round = this.games.hits.length;
+                this.gameState = this.games.gameState;
 
                 // set player vs opponent info
                 app.getPlayersInfo();
@@ -75,10 +80,57 @@ var app = new Vue({
 
                 // sort history
                 app.sortHistory();
+
+                // show game state
+                app.showGameState();
             })
     },
 
     methods: {
+
+        showGameState() {
+            switch (this.gameState) {
+                case 'WAITING_FOR_OPPONENT':
+                    this.gameStateBanner = 'Waiting for an Opponent to Join the Game';
+                    document.getElementById('gameStateBanner').classList.add('btn-warning');
+                    break;
+
+                case 'WAITING_FOR_YOUR_SHIPS':
+                    this.gameStateBanner = 'Place your Ships';
+                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    break;
+
+                case 'WAITING_FOR_ENEMY_SHIPS':
+                    this.gameStateBanner = 'Waiting for your Opponent to deploy ships';
+                    document.getElementById('gameStateBanner').classList.add('btn-warning');
+                    break;
+
+                case 'WAITING_FOR_YOUR_SHOTS':
+                    this.gameStateBanner = 'Take your shots';
+                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    break;
+
+                case 'WAITING_FOR_ENEMY_SHOTS':
+                    this.gameStateBanner = 'Your opponent is taking shots';
+                    document.getElementById('gameStateBanner').classList.add('btn-warning');
+                    break;
+
+                case 'GAME_OVER_WON':
+                    this.gameStateBanner = 'Congratulations, you WON';
+                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    break;
+
+                case 'GAME_OVER_TIE':
+                    this.gameStateBanner = 'Mutual destruction, it' + "'" + 's a TIE';
+                    document.getElementById('gameStateBanner').classList.add('btn-warning');
+                    break;
+
+                case 'GAME_OVER_LOSS':
+                    this.gameStateBanner = 'Ups, you have no ships left, better luck next time'
+                    document.getElementById('gameStateBanner').classList.add('btn-outline-danger');
+                    break;
+            }
+        },
 
         sortHistory() {
 
@@ -99,27 +151,33 @@ var app = new Vue({
             this.history = {
                 hits: this.games.hits.sort(compareTurn),
                 sunken: this.games.sunken.sort(compareTurn),
-                sunkenTypes: [],
+                sunkenTypes: '',
                 enemyHits: this.games.enemyHits.sort(compareTurn),
                 enemySunken: this.games.enemySunken.sort(compareTurn),
-                enemySunkenTypes: [],
-                salvosFired: [],
+                enemySunkenTypes: '',
+                salvosFired: '',
             };
 
             // x = app.history.sunken[app.history.sunken.length - 1].sunken[0].type = "patrol"
-            this.history.sunken[this.history.sunken.length - 1].sunken.forEach(sunk => {
-                this.history.sunkenTypes = this.history.sunkenTypes + sunk.type + " ";
-            })
+            if (this.games.sunken.length != 0) {
+                this.history.sunken[this.history.sunken.length - 1].sunken.forEach(sunk => {
+                    this.history.sunkenTypes = this.history.sunkenTypes + sunk.type + " ";
+                })
+            };
 
-            this.history.enemySunken[this.history.enemySunken.length - 1].sunken.forEach(sunk => {
-                this.history.enemySunkenTypes = this.history.enemySunkenTypes + sunk.type + " ";
-            })
+            if (this.games.enemySunken.length != 0) {
+                this.history.enemySunken[this.history.enemySunken.length - 1].sunken.forEach(sunk => {
+                    this.history.enemySunkenTypes = this.history.enemySunkenTypes + sunk.type + " ";
+                })
+            };
 
-            this.games.salvos.forEach(salvo => {
-                if (salvo.username == this.owner) {
-                    this.history.salvosFired += salvo.salvoLocation + ",";
-                }
-            })
+            if (this.games.salvos.length != 0) {
+                this.games.salvos.forEach(salvo => {
+                    if (salvo.username == this.owner) {
+                        this.history.salvosFired += salvo.salvoLocation + ",";
+                    }
+                })
+            };
         },
 
         getPlayersInfo() {
@@ -205,41 +263,43 @@ var app = new Vue({
         },
 
         /* Listen for events is a method in Vue already, implemented with:
-
+ 
          <td> v-on:click="listenForShotsWithVue()" </td>
-
+ 
         listenForShots_WITHOUT_VUE() {
             document.getElementById("salvos_grid").addEventListener('click', function(event) {
-
+ 
                 // Don't follow the link
                 event.preventDefault();
-
+ 
                 //remove .salvo from id until the TEST_GRID is no longe needed
                 var x = event.target['id'];
                 x = x.substring(0, x.indexOf('.'));
-
+ 
                 // Log the clicked element in the console
                 if (app.shots.includes(x)) {
-
+ 
                     console.log('Remove' + x);
                     app.shots = app.shots.filter(function(ele) { return ele != x; });
                     document.getElementById(x + '.salvo').classList.remove('td_salvo');
-
+ 
                 } else {
-
+ 
                     console.log('Planning shot:' + x);
                     app.shots.push(x);
                     document.getElementById(x + '.salvo').classList.add('td_salvo');
                 }
-
+ 
                 if (app.shots.length == 5) {
                     alert("Maximum number of shots taken, it time to FIRE AWAY (or take back planned shot) !!!");
                 }
-
+ 
             });
         }, */
 
         listenForShotsWithVue() {
+
+            if (this.gameState != 'WAITING_FOR_YOUR_SHOTS') return;
 
             var x = event.target['id'];
 
