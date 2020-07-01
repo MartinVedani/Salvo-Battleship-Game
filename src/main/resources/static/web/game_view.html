@@ -125,9 +125,12 @@
             <div class="col">
 
                 <div>
-                    <template v-if="staticGrid == false">
+                    <template v-if="!staticGrid">
                         <h2>Place your Ships</h2>
                         <p>Drag and drop, click to rotate 90º</p>
+                        <button v-on:click="placeShips()" type="button" class="mb-3 btn btn-sm btn-danger">
+                            Click to Lock your ships in place and begin battle
+                        </button>
                     </template>
 
                     <template v-else>
@@ -143,22 +146,15 @@
                     </div>
                 </div>
 
-                <br>
-
-                <button v-if="staticGrid == false" v-on:click="placeShips()" type="button"
-                    class=" btn btn-sm btn-danger">
-                    Lock your ships in place and begin battle
-                </button>
-
             </div>
 
-            <div class="col-6">
+            <div class="col-6" v-if="staticGrid">
                 <h3 style="display:inline-block;"> Your Shots </h3>
 
                 <button v-if="gameState == 'WAITING_FOR_YOUR_SHOTS' " v-on:click="shootSalvos(shots)" type="button"
                     class="ml-4 mb-1 btn btn-sm btn-danger inline-block">
                     <!-- v-if is a boolean, so it assumes "true" if nothing specified in v-if -->
-                    FIRE AWAY !!!!
+                    Click to FIRE AWAY !!!!
                 </button>
 
                 <div class="table-responsive text-center">

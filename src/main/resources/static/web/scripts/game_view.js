@@ -13,6 +13,8 @@ var app = new Vue({
         owner: "",
         opponent: "",
         shots: [],
+        timerIdStatus: null,
+        timerIdTakeAction: null,
 
         // for gameState
         gameState: '',
@@ -75,44 +77,83 @@ var app = new Vue({
                     app.createGridStack();
                 }
 
-                //print ALL salvos
-                app.printSalvos();
-
                 // sort history
                 app.sortHistory();
 
                 // show game state
                 app.showGameState();
+
             })
     },
 
+    updated() {
+        //print ALL salvos once all fetch items are mounted (created)
+        this.printSalvos();
+    },
+
     methods: {
+
+        startCheckingGameStatus() {
+            this.timerIdStatus = setInterval(function () { location.reload(); }, 20000);
+        },
+
+        // stopCheckingGameStatus() {
+        //     clearInterval(timerIdStatus);
+        // },
+
+        startReminder() {
+            timerIdTakeAction = setTimeout(function () { alert("Are you still there? It's your turn!!"); }, 45000);
+        },
+
+        // stopReminder() {
+        //     clearTimeout(timerIdTakeAction);
+        // },
 
         showGameState() {
             switch (this.gameState) {
                 case 'WAITING_FOR_OPPONENT':
                     this.gameStateBanner = 'Waiting for an Opponent to Join the Game';
                     document.getElementById('gameStateBanner').classList.add('btn-warning');
+
+                    // start timer for page reload
+                    app.startCheckingGameStatus();
+
                     break;
 
                 case 'WAITING_FOR_YOUR_SHIPS':
                     this.gameStateBanner = 'Place your Ships';
                     document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+
+                    // start timer for reminder to take action
+                    app.startReminder();
+
                     break;
 
                 case 'WAITING_FOR_ENEMY_SHIPS':
                     this.gameStateBanner = 'Waiting for your Opponent to deploy ships';
                     document.getElementById('gameStateBanner').classList.add('btn-warning');
+
+                    // start timer for page reload
+                    app.startCheckingGameStatus();
+
                     break;
 
                 case 'WAITING_FOR_YOUR_SHOTS':
                     this.gameStateBanner = 'Take your shots';
                     document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+
+                    // start timer for reminder to take action
+                    app.startReminder();
+
                     break;
 
                 case 'WAITING_FOR_ENEMY_SHOTS':
                     this.gameStateBanner = 'Your opponent is taking shots';
                     document.getElementById('gameStateBanner').classList.add('btn-warning');
+
+                    // start timer for page reload
+                    app.startCheckingGameStatus();
+
                     break;
 
                 case 'GAME_OVER_WON':
@@ -129,6 +170,7 @@ var app = new Vue({
                     this.gameStateBanner = 'Ups, you have no ships left, better luck next time'
                     document.getElementById('gameStateBanner').classList.add('btn-outline-danger');
                     break;
+
             }
         },
 

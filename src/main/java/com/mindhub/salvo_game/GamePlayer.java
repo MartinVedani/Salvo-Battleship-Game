@@ -169,11 +169,9 @@ public class GamePlayer {
             response = GameState.GAME_OVER_WON;
         } else if (gpTurn == enemyTurn && (gpSunkenShips < 5 && enemySunkenShips == 5)){
             response = GameState.GAME_OVER_LOSS;
-
         //Keep playing the game if no one has sunken 5 ships yet
         } else if (gpTurn == enemyTurn && gpGpId < enemyGpId) {
             response = GameState.WAITING_FOR_YOUR_SHOTS;
-
         } else if (gpTurn == enemyTurn && gpGpId > enemyGpId) {
             response = GameState.WAITING_FOR_ENEMY_SHOTS;
         }

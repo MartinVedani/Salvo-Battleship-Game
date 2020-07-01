@@ -33,6 +33,9 @@ public class AppController {
     private GamePlayerRepository gamePlayerRepository;
 
     @Autowired
+    private ScoreRepository scoreRepository;
+
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     // en Java, Map es una lista (que representa un objeto con toda la información de una instancia de
@@ -210,6 +213,20 @@ public class AppController {
                 gamePlayerRepository.save(gamePlayer.get());
 
                 response = new ResponseEntity<>(makeMap("success", "salvo added!"), HttpStatus.CREATED);
+
+                // Save score if game is over, we use gamePlayer.get() because gamePlayer is inside "Optional"
+                GameState gameState = gamePlayer.get().getGameState();
+
+                if (gameState == GameState.GAME_OVER_WON) {
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getPlayer(),1.0,LocalDateTime.now()));
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getOpponent().getPlayer(),0.0,LocalDateTime.now()));
+                } else if (gameState == GameState.GAME_OVER_TIE) {
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getPlayer(),0.5,LocalDateTime.now()));
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getOpponent().getPlayer(),0.5,LocalDateTime.now()));
+                } else if (gameState == GameState.GAME_OVER_LOSS) {
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getPlayer(),0.0,LocalDateTime.now()));
+                    scoreRepository.save(new Score(gamePlayer.get().getGame(),gamePlayer.get().getOpponent().getPlayer(),1.0,LocalDateTime.now()));
+                }
             }
         }
         return response;
