@@ -279,27 +279,27 @@ var app = new Vue({
     }
 });
 
-// JSON Feed for help developing
+// JSON Feed for help developing - AJAX call
 
-$(function () {
+// $(function () {
 
-    // display text in the output area
-    function showOutput(text) {
-        $("#output").text(text);
-    }
+//     // display text in the output area
+//     function showOutput(text) {
+//         $("#output").text(text);
+//     }
 
-    // load and display JSON sent by server for /games
+//     // load and display JSON sent by server for /games
 
-    function loadData() {
-        $.get(url)
-            .done(function (data) {
-                showOutput(JSON.stringify(data, null, 2));
-            })
-            .fail(function (jqXHR, textStatus) {
-                showOutput("Failed: " + textStatus);
-            });
-    }
+//     function loadData() {
+//         $.get(url)
+//             .done(function (data) {
+//                 showOutput(JSON.stringify(data, null, 2));
+//             })
+//             .fail(function (jqXHR, textStatus) {
+//                 showOutput("Failed: " + textStatus);
+//             });
+//     }
 
-    loadData();
+//     loadData();
 
-});
+// });

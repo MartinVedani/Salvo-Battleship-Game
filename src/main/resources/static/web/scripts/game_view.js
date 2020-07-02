@@ -94,7 +94,7 @@ var app = new Vue({
     methods: {
 
         startCheckingGameStatus() {
-            this.timerIdStatus = setInterval(function () { location.reload(); }, 20000);
+            this.timerIdStatus = setInterval(function () { location.reload(); }, 15000);
         },
 
         // stopCheckingGameStatus() {
@@ -102,7 +102,7 @@ var app = new Vue({
         // },
 
         startReminder() {
-            timerIdTakeAction = setTimeout(function () { alert("Are you still there? It's your turn!!"); }, 45000);
+            timerIdTakeAction = setTimeout(function () { alert("Are you still there? It's your turn!!"); }, 000);
         },
 
         // stopReminder() {
@@ -113,6 +113,7 @@ var app = new Vue({
             switch (this.gameState) {
                 case 'WAITING_FOR_OPPONENT':
                     this.gameStateBanner = 'Waiting for an Opponent to Join the Game';
+                    // también se puede hacer con Vue https://es.vuejs.org/v2/guide/class-and-style.html
                     document.getElementById('gameStateBanner').classList.add('btn-warning');
 
                     // start timer for page reload
@@ -755,27 +756,27 @@ var app = new Vue({
     },
 });
 
-// AJAX Feed for help with developing
+// JSON Feed for help developing - AJAX call
 
-$(function () {
+// $(function () {
 
-    // display text in the output area
-    function showOutput(text) {
-        $("#output").text(text);
-    }
+//     // display text in the output area
+//     function showOutput(text) {
+//         $("#output").text(text);
+//     }
 
-    // load and display JSON sent by server for /games
+//     // load and display JSON sent by server for /games
 
-    function loadData() {
-        $.get(url)
-            .done(function (data) {
-                showOutput(JSON.stringify(data, null, 2));
-            })
-            .fail(function (jqXHR, textStatus) {
-                showOutput("Failed: " + textStatus);
-            });
-    }
+//     function loadData() {
+//         $.get(url)
+//             .done(function (data) {
+//                 showOutput(JSON.stringify(data, null, 2));
+//             })
+//             .fail(function (jqXHR, textStatus) {
+//                 showOutput("Failed: " + textStatus);
+//             });
+//     }
 
-    loadData();
+//     loadData();
 
-});
+// });
