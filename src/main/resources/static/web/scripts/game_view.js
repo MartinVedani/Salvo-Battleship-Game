@@ -102,7 +102,7 @@ var app = new Vue({
         // },
 
         startReminder() {
-            timerIdTakeAction = setTimeout(function () { alert("Are you still there? It's your turn!!"); }, 000);
+            timerIdTakeAction = setTimeout(function () { alert("Are you still there? It's your turn!!"); }, 30000);
         },
 
         // stopReminder() {
