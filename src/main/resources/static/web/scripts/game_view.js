@@ -216,7 +216,7 @@ var app = new Vue({
 
             if (this.games.salvos.length != 0) {
                 this.games.salvos.forEach(salvo => {
-                    if (salvo.username == this.owner) {
+                    if (salvo.username === this.owner) {
                         this.history.salvosFired += salvo.salvoLocation + ",";
                     }
                 })

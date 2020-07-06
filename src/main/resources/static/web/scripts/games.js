@@ -11,7 +11,7 @@ var app = new Vue({
         username: null,
         password: null,
         gameIdOwners: [],
-        timerId: setInterval(function () { location.reload(); }, 20000),
+        timerId: setInterval(function () { location.reload(); }, 30000),
     },
 
     created() {
