@@ -117,6 +117,16 @@ th {
     background-color: yellow;
 }
 
+#salvos_grid td { 
+    height: 40px; 
+    width: 40px;
+}
+
+#salvos_grid th { 
+    height: 40px; 
+    width: 40px;
+}
+
 .td_salvo {
     background-color: yellow;
 }
