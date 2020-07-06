@@ -123,7 +123,7 @@ var app = new Vue({
 
                 case 'WAITING_FOR_YOUR_SHIPS':
                     this.gameStateBanner = 'Place your Ships';
-                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    document.getElementById('gameStateBanner').classList.add('btn-success');
 
                     // start timer for reminder to take action
                     app.startReminder();
@@ -141,7 +141,7 @@ var app = new Vue({
 
                 case 'WAITING_FOR_YOUR_SHOTS':
                     this.gameStateBanner = 'Take your shots';
-                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    document.getElementById('gameStateBanner').classList.add('btn-success');
 
                     // start timer for reminder to take action
                     app.startReminder();
@@ -159,7 +159,7 @@ var app = new Vue({
 
                 case 'GAME_OVER_WON':
                     this.gameStateBanner = 'Congratulations, you WON';
-                    document.getElementById('gameStateBanner').classList.add('btn-outline-success');
+                    document.getElementById('gameStateBanner').classList.add('btn-success');
                     break;
 
                 case 'GAME_OVER_TIE':
@@ -169,7 +169,7 @@ var app = new Vue({
 
                 case 'GAME_OVER_LOSS':
                     this.gameStateBanner = 'Ups, you have no ships left, better luck next time'
-                    document.getElementById('gameStateBanner').classList.add('btn-outline-danger');
+                    document.getElementById('gameStateBanner').classList.add('btn-danger');
                     break;
 
             }

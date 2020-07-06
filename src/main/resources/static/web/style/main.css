@@ -79,6 +79,8 @@
 
 /* MY STYLES BELOW */
 
+
+
 .naval_grid {
     background-color: lightblue;
 }
@@ -92,7 +94,7 @@
 table,
 th,
 td {
-    border: 1px solid black;
+    border: 1px solid white;
     text-align: center;
     padding: 8px;
 }
@@ -166,4 +168,16 @@ th {
     margin-left: auto;
     margin-right: auto;
     height: 150px;
+}
+
+.container-fluid{
+    background-image: url(formation.jpg);
+    background-size:100% 100%;
+    color: white;
+}
+
+.container-fluid-gameview{
+    background-image: url(chase.jpg);
+    background-size:100% 100%;
+    color: white;
 }

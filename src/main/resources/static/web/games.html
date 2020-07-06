@@ -20,7 +20,7 @@
 
                 <template v-if=" player == 'Guest' ">
                     <br>
-                    <button data-target="#existingUser" class="btn btn-sm if-collapsed btn-outline-primary"
+                    <button data-target="#existingUser" class="btn btn-sm if-collapsed btn-primary"
                         data-toggle="collapse" v-on:click="collapseAll">
                         Existing Player login
                     </button>
@@ -109,8 +109,7 @@
                 <h2> Salvo Games </h2>
 
                 <template>
-                    <button v-if=" player != 'Guest' " v-on:click="createGame()"
-                        class=" btn btn-sm btn-outline-primary">
+                    <button v-if=" player != 'Guest' " v-on:click="createGame()" class=" btn btn-sm btn-primary">
                         Create New Game </button> <br><br>
                 </template>
 
@@ -183,8 +182,7 @@
             </div>
         </div>
 
-        <!-- JSON for developing - AJAX output-->
-        <!-- <pre id="output"></pre> -->
+        <hr>
 
     </div>
 
