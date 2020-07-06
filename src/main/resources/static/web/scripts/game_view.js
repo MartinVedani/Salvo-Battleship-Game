@@ -198,7 +198,7 @@ var app = new Vue({
                 enemyHits: this.games.enemyHits.sort(compareTurn),
                 enemySunken: this.games.enemySunken.sort(compareTurn),
                 enemySunkenTypes: '',
-                salvosFired: '',
+                salvosFired: [],
             };
 
             // x = app.history.sunken[app.history.sunken.length - 1].sunken[0].type = "patrol"
@@ -217,7 +217,7 @@ var app = new Vue({
             if (this.games.salvos.length != 0) {
                 this.games.salvos.forEach(salvo => {
                     if (salvo.username == this.owner) {
-                        this.history.salvosFired += salvo.salvoLocation + ",";
+                        this.history.salvosFired.push(salvo.salvoLocation);
                     }
                 })
             };
@@ -350,7 +350,7 @@ var app = new Vue({
             x = x.substring(0, x.indexOf('.'));
 
             // Ignore cells already fired on
-            if (this.history.salvosFired.filter(s => s == x).length > 0) return;
+            if (this.history.salvosFired.includes(x)) return;
 
             // Log the clicked element in the console
             if (app.shots.includes(x)) {
