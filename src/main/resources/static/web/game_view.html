@@ -18,10 +18,10 @@
 
 <body>
 
-    <div class="container-fluid container-fluid-gameview " id="app">
+    <div class="container-fluid background_gameview " id="app">
         <hr>
         <div class="row justify-content-center align-self-center h-100 justify-content-center align-items-center">
-            <div class="col-6">
+            <div class="col-md-6 col-12">
                 <div class="table-responsive justify-content-center">
                     <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
                         <thead>
@@ -66,7 +66,7 @@
 
             </div>
 
-            <div class="col-6">
+            <div class="col-md-6 col-12">
                 <div class="table-responsive">
                     <table class="table-striped table-hover table-sm align-middle" id="gamesTable">
                         <thead>
@@ -122,7 +122,7 @@
 
         <div class="row justify-content-center align-self-center">
 
-            <div class="col">
+            <div class="col-md-6 col-12">
 
                 <div>
                     <template v-if="!staticGrid">
@@ -138,17 +138,19 @@
                     </template>
                 </div>
 
-                <!-- GridStack -->
-                <!-- div solo para colocar el borde y posicionar en base a la altura y anchura-->
-                <div id="grid-ships">
-                    <!-- div que usa la librería gridstack-->
-                    <div id="grid" class="grid-stack grid-stack-10">
+                <div class='table-responsive'>
+                    <!-- GridStack -->
+                    <!-- div solo para colocar el borde y posicionar en base a la altura y anchura-->
+                    <div id="grid-ships">
+                        <!-- div que usa la librería gridstack-->
+                        <div id="grid" class="grid-stack grid-stack-10">
+                        </div>
                     </div>
-                </div>
+                </div class='table-responsive'>
 
             </div>
 
-            <div class="col-6" v-if="staticGrid">
+            <div class="col-md-6 col-12" v-if="staticGrid">
                 <h3 style="display:inline-block;"> Your Shots </h3>
 
                 <button v-if="gameState == 'WAITING_FOR_YOUR_SHOTS' " v-on:click="shootSalvos(shots)" type="button"

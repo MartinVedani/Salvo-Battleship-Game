@@ -170,13 +170,13 @@ th {
     height: 150px;
 }
 
-.container-fluid{
+.background_gamecenter{
     background-image: url(formation.jpg);
     background-size:100% 100%;
     color: white;
 }
 
-.container-fluid-gameview{
+.background_gameview{
     background-image: url(chase.jpg);
     background-size:100% 100%;
     color: white;

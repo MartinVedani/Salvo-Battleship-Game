@@ -43,3 +43,4 @@ backups and docs/Task_1_Salvo-Battleship-Game.zip
 backups and docs/task_2_Salvo-Battleship-Game.zip
 backups and docs/Task_3_Salvo-Battleship-Game.zip
 bin/*
+src/main/resources/static/web/style/.DS_Store
