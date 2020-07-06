@@ -1,6 +1,8 @@
 # Salvo-Battleship-Game
 MindHub Latam 5. Java Full Stack (front and back-end)
 
+The game can be played online at https://app-salvo-battleship-fullstack.herokuapp.com/web/games.html
+
 In this module, our team of developers has been contacted by a board game company looking to use their brand recognition to market online games with a retro touch. In particular, they want our team to create a multi-player online version of a Salvo-like game engine. Salvo was a pencil and paper game that was the basis for the popular Battleship game. The basic idea involves guessing where other players have hidden objects. This can be varied to create many different kinds of games with different user interfaces.
 
 Our job will be to create a front-end web application that game players interact with, and a back-end game server to manage the games, scoring, and player profiles. We will use the jQuery JavaScript library for the front-end client, and the Spring Boot framework for the Java-based RESTful web server.
