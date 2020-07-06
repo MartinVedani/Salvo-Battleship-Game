@@ -216,7 +216,7 @@ var app = new Vue({
 
             if (this.games.salvos.length != 0) {
                 this.games.salvos.forEach(salvo => {
-                    if (salvo.username === this.owner) {
+                    if (salvo.username == this.owner) {
                         this.history.salvosFired += salvo.salvoLocation + ",";
                     }
                 })
@@ -350,7 +350,7 @@ var app = new Vue({
             x = x.substring(0, x.indexOf('.'));
 
             // Ignore cells already fired on
-            if (this.history.salvosFired.includes(x)) return;
+            if (this.history.salvosFired.filter(s => s == x).length > 0) return;
 
             // Log the clicked element in the console
             if (app.shots.includes(x)) {
