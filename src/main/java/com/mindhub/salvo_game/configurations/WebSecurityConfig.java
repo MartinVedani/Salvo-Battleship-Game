@@ -1,4 +1,4 @@
-package com.mindhub.salvo_game;
+package com.mindhub.salvo_game.configurations;
 
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;

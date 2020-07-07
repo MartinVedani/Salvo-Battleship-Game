@@ -1,4 +1,4 @@
-package com.mindhub.salvo_game;
+package com.mindhub.salvo_game.models;
 
 public enum GameState {
     WAITING_FOR_OPPONENT,

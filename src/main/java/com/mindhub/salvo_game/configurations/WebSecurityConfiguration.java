@@ -1,6 +1,8 @@
-package com.mindhub.salvo_game;
+package com.mindhub.salvo_game.configurations;
 
 
+import com.mindhub.salvo_game.models.Player;
+import com.mindhub.salvo_game.repositories.PlayerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

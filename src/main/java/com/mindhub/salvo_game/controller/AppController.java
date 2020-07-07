@@ -1,5 +1,10 @@
-package com.mindhub.salvo_game;
+package com.mindhub.salvo_game.controller;
 
+import com.mindhub.salvo_game.models.*;
+import com.mindhub.salvo_game.repositories.GamePlayerRepository;
+import com.mindhub.salvo_game.repositories.GameRepository;
+import com.mindhub.salvo_game.repositories.PlayerRepository;
+import com.mindhub.salvo_game.repositories.ScoreRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -71,16 +76,16 @@ public class AppController {
     public ResponseEntity<Map<String, Object>> getGameView(@PathVariable long gamePlayerId, Authentication authentication) {
         ResponseEntity<Map<String, Object>> response;
         if (isGuest(authentication)) {
-            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.FORBIDDEN);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_LOGGED_IN), HttpStatus.FORBIDDEN);
         } else {
             Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
             // "Optional" puede traer al gamePlayer que encuentre por id o no retornar nada y
             // gamePlayer puede no crearse y no existir si es que el gamePlayerId no se ecuentra.
             Player player = playerRepository.findPlayerByUsername(authentication.getName());
             if (!gamePlayer.isPresent()) { //En caso de que gamePlayer NO exista (porque no se encontré antes)
-                response = new ResponseEntity<>(makeMap("error", "Game does not exist"), HttpStatus.NOT_FOUND);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.GAME_NOT_FOUND), HttpStatus.NOT_FOUND);
             } else if (gamePlayer.get().getPlayer().getId() != player.getId()) {
-                response = new ResponseEntity<>(makeMap("error", "This is not your game"), HttpStatus.UNAUTHORIZED);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_YOUR_GAME), HttpStatus.UNAUTHORIZED);
             } else {
                 response = new ResponseEntity<>(gamePlayer.get().gamePlayerViewDTO(), HttpStatus.OK);
             }
@@ -96,9 +101,9 @@ public class AppController {
         ResponseEntity<Map<String, Object>> response;
         Player player = playerRepository.findPlayerByUsername(username);
         if (firstName.isEmpty() || lastName.isEmpty() || username.isEmpty() || password.isEmpty()) {
-            response = new ResponseEntity<>(makeMap("error", "Missing data"), HttpStatus.BAD_REQUEST);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.MISSING_DATA), HttpStatus.BAD_REQUEST);
         } else if (player != null) {
-            response = new ResponseEntity<>(makeMap("error", "Username already exists"), HttpStatus.CONFLICT);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.USER_EXISTS), HttpStatus.CONFLICT);
         } else {
             Player newPlayer = playerRepository.save(new Player(firstName, lastName, username, passwordEncoder.encode(password)));
             response = new ResponseEntity<>(makeMap("id", newPlayer.getId()), HttpStatus.CREATED);
@@ -111,7 +116,7 @@ public class AppController {
     public ResponseEntity<Map<String, Object>> createGame(Authentication authentication){
         ResponseEntity<Map<String, Object>> response;
         if(isGuest(authentication)){
-            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.FORBIDDEN);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_LOGGED_IN), HttpStatus.FORBIDDEN);
         } else {
             Player player = playerRepository.findPlayerByUsername(authentication.getName());
             Game newGame = gameRepository.save(new Game(LocalDateTime.now()));
@@ -127,18 +132,18 @@ public class AppController {
     public ResponseEntity<Map<String, Object>> joinGame(Authentication authentication, @PathVariable long gameId) {
         ResponseEntity<Map<String, Object>> response;
         if (isGuest(authentication)) {
-            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.UNAUTHORIZED);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_LOGGED_IN), HttpStatus.UNAUTHORIZED);
         } else {
             Optional<Game> game = gameRepository.findById(gameId);
             if(!game.isPresent()){
-                response = new ResponseEntity<>(makeMap("error", "No such game"), HttpStatus.NOT_FOUND);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.GAME_NOT_FOUND), HttpStatus.NOT_FOUND);
             } else if (game.get().getGamePlayers().size() > 1) {
                 // game.get() pulls whatever is inside the "optional" we created in the game variable.
-                response = new ResponseEntity<>(makeMap("error", "Game is full"), HttpStatus.FORBIDDEN);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.GAME_FULL), HttpStatus.FORBIDDEN);
             } else {
                 Player player = playerRepository.findPlayerByUsername(authentication.getName());
                 if(game.get().getGamePlayers().stream().anyMatch(gp -> gp.getPlayer().getId() == player.getId())){
-                    response = new ResponseEntity<>(makeMap("error", "You cannot play against yourself!"), HttpStatus.FORBIDDEN);
+                    response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_AN_OPPONENT), HttpStatus.FORBIDDEN);
                 } else {
                     GamePlayer newGamePlayer = gamePlayerRepository.save(new GamePlayer(game.get(), player, LocalDateTime.now()));
                     response = new ResponseEntity<>(makeMap("gpId", newGamePlayer.getId()), HttpStatus.CREATED);
@@ -155,30 +160,30 @@ public class AppController {
                                                         @RequestBody List<Ship> ships){
         ResponseEntity<Map<String, Object>> response;
         if(isGuest(authentication)) {
-            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.UNAUTHORIZED);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_LOGGED_IN), HttpStatus.UNAUTHORIZED);
         } else {
             Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
             Player player = playerRepository.findPlayerByUsername(authentication.getName());
             if(!gamePlayer.isPresent()){
-                response = new ResponseEntity<>(makeMap("error", "No such game!"), HttpStatus.NOT_FOUND);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.GAME_NOT_FOUND), HttpStatus.NOT_FOUND);
             } else if (gamePlayer.get().getPlayer().getId() != player.getId()){
-                response = new ResponseEntity<>(makeMap("error", "this is not your game"), HttpStatus.UNAUTHORIZED);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_YOUR_GAME), HttpStatus.UNAUTHORIZED);
             } else if (gamePlayer.get().getShips().size() > 0){
                 // getShips() = 1 would be 1 complete array of 5 ships
-                response = new ResponseEntity<>(makeMap("error", "All your ships have been placed"), HttpStatus.FORBIDDEN);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.ALL_SHIPS_IN_PLACE), HttpStatus.FORBIDDEN);
             } else if (ships == null || ships.size() != 5){
-                response = new ResponseEntity<>(makeMap("error","You must add 5 ships"), HttpStatus.FORBIDDEN);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR,AppMessage.SHIPS_MISSING), HttpStatus.FORBIDDEN);
             } else {
                 if(ships.stream().anyMatch(ship -> this.isOutOfRange(ship))){
-                    response = new ResponseEntity<>(makeMap("error","you have ships out of range"), HttpStatus.FORBIDDEN);
+                    response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR,AppMessage.SHIPS_OUT_OF_RANGE), HttpStatus.FORBIDDEN);
                 } else if (ships.stream().anyMatch(ship -> isNotConsecutive(ship))) {
-                    response = new ResponseEntity<>(makeMap("error","you ships are not consecutive"), HttpStatus.FORBIDDEN);
+                    response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR,AppMessage.SHIPS_NOT_CONSECUTIVE), HttpStatus.FORBIDDEN);
                 } else if (this.areOverlapped(ships)){
-                    response = new ResponseEntity<>(makeMap("error","you ships are overlapped"), HttpStatus.FORBIDDEN);
+                    response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR,AppMessage.SHIPS_OVERLAP), HttpStatus.FORBIDDEN);
                 } else {
                     ships.forEach(ship -> gamePlayer.get().addShip(ship));
                     gamePlayerRepository.save(gamePlayer.get());
-                    response = new ResponseEntity<>(makeMap("success", "Ships added!"), HttpStatus.CREATED);
+                    response = new ResponseEntity<>(makeMap(AppMessage.KEY_SUCCESS, AppMessage.SHIPS_ADDED), HttpStatus.CREATED);
                 }
             }
         }
@@ -194,16 +199,16 @@ public class AppController {
         // back end after receiving a "shots" as strings
         ResponseEntity<Map<String, Object>> response;
         if(isGuest(authentication)) {
-            response = new ResponseEntity<>(makeMap("error", "You must be logged in first"), HttpStatus.UNAUTHORIZED);
+            response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_LOGGED_IN), HttpStatus.UNAUTHORIZED);
         } else {
             Optional<GamePlayer> gamePlayer = gamePlayerRepository.findById(gamePlayerId);
             Player player = playerRepository.findPlayerByUsername(authentication.getName());
             if(!gamePlayer.isPresent()){
-                response = new ResponseEntity<>(makeMap("error", "No such game!"), HttpStatus.NOT_FOUND);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.GAME_NOT_FOUND), HttpStatus.NOT_FOUND);
             } else if (gamePlayer.get().getPlayer().getId() != player.getId()){
-                response = new ResponseEntity<>(makeMap("error", "this is not your game"), HttpStatus.UNAUTHORIZED);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.NOT_YOUR_GAME), HttpStatus.UNAUTHORIZED);
             } else if (shots.size() != 5){
-                response = new ResponseEntity<>(makeMap("error", "wrong number of shots"), HttpStatus.FORBIDDEN);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_ERROR, AppMessage.WRONG_SHOTS), HttpStatus.FORBIDDEN);
             } else {
                 int turn = gamePlayer.get().getSalvos().size() +1;
                 //each object with any number of salvos as elements is 1 turn
@@ -212,7 +217,7 @@ public class AppController {
 
                 gamePlayerRepository.save(gamePlayer.get());
 
-                response = new ResponseEntity<>(makeMap("success", "salvo added!"), HttpStatus.CREATED);
+                response = new ResponseEntity<>(makeMap(AppMessage.KEY_SUCCESS, AppMessage.SHOTS_FIRED), HttpStatus.CREATED);
 
                 // Save score if game is over, we use gamePlayer.get() because gamePlayer is inside "Optional"
                 GameState gameState = gamePlayer.get().getGameState();

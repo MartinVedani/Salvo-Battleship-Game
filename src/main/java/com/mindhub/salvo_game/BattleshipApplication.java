@@ -1,5 +1,7 @@
 package com.mindhub.salvo_game;
 
+import com.mindhub.salvo_game.models.*;
+import com.mindhub.salvo_game.repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
