@@ -45,3 +45,4 @@ backups and docs/Task_3_Salvo-Battleship-Game.zip
 bin/*
 src/main/resources/static/web/style/.DS_Store
 backups and docs/*
+src/main/resources/static/web/scripts/.DS_Store
